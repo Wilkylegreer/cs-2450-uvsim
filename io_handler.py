@@ -13,6 +13,7 @@ def load_program(filename):
 
 
 def run_program(memory):
+    accumulator = 0
     counter = 0
     while True:
         instruction = memory[counter]
