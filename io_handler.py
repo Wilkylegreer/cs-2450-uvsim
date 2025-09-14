@@ -1,4 +1,3 @@
-#io.py
 
 memorySize = 100
 def load_program(filename):
@@ -20,9 +19,17 @@ def run_program(memory):
         operation = instruction // 100
         memLocation = instruction % 100
         if operation == 10:
-            memory[memLocation] = int(input(f"Type a word: [{memLocation}]: "))
+            memory[memLocation] = int(input(f"Enter a value [{memLocation}]: "))
         elif operation == 11:
             print(memory[memLocation]) #Write to screen
         else:
             break
         counter += 1
+
+
+def main():
+    filename = input("Enter the Basic ML file name: ")
+    memory = load_program(filename)
+    run_program(memory)
+
+main()
