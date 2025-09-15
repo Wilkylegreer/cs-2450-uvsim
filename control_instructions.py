@@ -1,34 +1,31 @@
 # control_instructions.py
-# Purpose: Implement control flow and I/O instructions for UVSim
-# Person C responsibility
 
-# Import necessary modules
-# from memory import Memory
-# from io_handler import get_input, print_output
+from memory import Memory
+from io_handler import get_input, print_output
 
 # ControlInstructions class
 class ControlInstructions:
-    def __init__(self, memory, io_handler, cpu):
+    def __init__(self, memory, cpu):
         """
         memory: Memory object
         io_handler: object/module for I/O operations
         cpu: CPU object (to access accumulator and instruction pointer)
         """
         self.memory = memory
-        self.io_handler = io_handler
         self.cpu = cpu
+        self.done = False
 
     # READ instruction
     def READ(self, address):
-        # Get input from user
-        # Store value in memory at 'address'
+        # Return value stored at the address
         pass
 
     # WRITE instruction
     def WRITE(self, address):
         # Fetch value from memory at 'address'
+        value = self.memory.get_value(address)
         # Output value to user
-        pass
+        print_output(value)
 
     # LOAD instruction
     def LOAD(self, address):
@@ -58,4 +55,5 @@ class ControlInstructions:
     # HALT instruction
     def HALT(self):
         # Stop program execution
-        pass
+        self.done = True
+        print("Program Finished...")
