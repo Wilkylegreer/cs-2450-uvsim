@@ -7,14 +7,11 @@ from program_loader import ProgramLoader
 from io_handler import get_input, print_output
 
 def main():
-    # Initialize Memory object
+    # Initializations
     memory = Memory()
-    # Initialize CPU object
     cpu = CPU()
 
-    # Initialize ControlInstructions with memory, I/O, CPU
     conInstruct = ControlInstructions(memory, cpu)
-    # Initialize ProgramLoader with memory
     proLoader = ProgramLoader(memory)
 
     userInput = get_input()

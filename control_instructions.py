@@ -16,26 +16,25 @@ class ControlInstructions:
         self.done = False
 
     # READ instruction
+    # Like STORE but from raw input
     def READ(self, address):
-        # Return value stored at the address
-        pass
+        # Get user input
+        word = input("Enter a 4-digit word:\n")
+        
 
     # WRITE instruction
     def WRITE(self, address):
-        # Fetch value from memory at 'address'
         value = self.memory.get_value(address)
-        # Output value to user
         print_output(value)
 
     # LOAD instruction
     def LOAD(self, address):
-        # Load value from memory at 'address' into accumulator
-        pass
+        self.memory.accumulator = self.memory.mem[address]
 
     # STORE instruction
     def STORE(self, address):
-        # Store accumulator value into memory at 'address'
-        pass
+        self.memory.set_value(address, self.memory.accumulator)
+        print("Storing complete...\n")
 
     # BRANCH instruction
     def BRANCH(self, address):
@@ -56,4 +55,4 @@ class ControlInstructions:
     def HALT(self):
         # Stop program execution
         self.done = True
-        print("Program Finished...")
+        print("Program Finished...\n")
