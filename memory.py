@@ -1,5 +1,4 @@
 #memory.py
-#test
 
 class Memory:
     def __init__(self):

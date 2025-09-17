@@ -27,12 +27,10 @@ def lineValidation(lines):
             return False
     return True
 
-# ProgramLoader class
 class ProgramLoader:
     def __init__(self, memory):
         self.memory = memory
 
-    # Load program from file
     def load_from_file(self, filename):
         try:
             with open(filename, "r") as file:
@@ -46,16 +44,3 @@ class ProgramLoader:
                 print(self.memory)
         except FileNotFoundError:
             print("Error: File was not found")
-
-    # Load program from list
-    def load_from_list(self, program_list):
-        # Validate each instruction
-        # Load instructions sequentially into memory
-        pass
-
-    # Validate individual instruction
-    def validate_instruction(self, instruction):
-        # Ensure instruction is a signed 4-digit number
-        # Split into opcode and operand
-        # Check opcode is valid
-        pass

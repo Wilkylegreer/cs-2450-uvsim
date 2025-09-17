@@ -5,7 +5,6 @@ from cpu import CPU
 from control_instructions import ControlInstructions
 from program_loader import ProgramLoader
 from math_instructions import MathInstructions
-from io_handler import get_input, print_output
 
 def print_mem(mem):
     for index, x in enumerate(mem.mem):
@@ -29,12 +28,11 @@ def main():
 
     # Load program
     if int(userInput) == 1:
-        proLoader.load_from_file("test_files/Test4.txt")
+        proLoader.load_from_file("test_files/Test1.txt")
     elif int(userInput) == 2:
-        proLoader.load_from_list()
+        proLoader.load_from_file("test_files/Test2.txt")
     elif int(userInput) == 3:
-        # Option 3: interactive input
-        pass
+        proLoader.load_from_file("test_files/Test3.txt")
     else:
         print("No Option Selected...")
 
