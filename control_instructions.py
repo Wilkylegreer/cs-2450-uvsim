@@ -13,7 +13,6 @@ class ControlInstructions:
         """
         self.memory = memory
         self.cpu = cpu
-        self.done = False
 
     # READ instruction
     # Like STORE but from raw input
@@ -29,11 +28,12 @@ class ControlInstructions:
 
     # LOAD instruction
     def LOAD(self, address):
-        self.memory.accumulator = self.memory.mem[address]
+        self.cpu.accumulator = self.memory.mem[address]
 
     # STORE instruction
     def STORE(self, address):
-        self.memory.set_value(address, self.memory.accumulator)
+        self.memory.set_value(address, self.cpu.accumulator)
+        print(self.memory)
         print("Storing complete...\n")
 
     # BRANCH instruction
@@ -54,5 +54,5 @@ class ControlInstructions:
     # HALT instruction
     def HALT(self):
         # Stop program execution
-        self.done = True
+        self.cpu.done = True
         print("Program Finished...\n")

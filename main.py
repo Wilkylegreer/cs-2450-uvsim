@@ -4,6 +4,7 @@ from memory import Memory
 from cpu import CPU
 from control_instructions import ControlInstructions
 from program_loader import ProgramLoader
+from math_instructions import MathInstructions
 from io_handler import get_input, print_output
 
 def print_mem(mem):
@@ -19,6 +20,7 @@ def main():
 
     conInstruct = ControlInstructions(memory, cpu)
     proLoader = ProgramLoader(memory)
+    mathInstruct = MathInstructions(memory)
 
     userInput = 1 # get_input()
 
