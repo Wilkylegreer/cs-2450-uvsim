@@ -1,8 +1,5 @@
 # program_loader.py
 
-# Import necessary modules
-from memory import Memory
-
 def lineCleanUp(lines):
     for index, x in enumerate(lines):
         cleaned = x.replace("+", "")

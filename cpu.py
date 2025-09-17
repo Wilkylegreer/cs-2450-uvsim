@@ -1,4 +1,5 @@
 #cpu.py
+
 class CPU:
     def __init__(self, memory):
         self.controlInstruct = None

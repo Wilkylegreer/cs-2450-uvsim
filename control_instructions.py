@@ -3,22 +3,18 @@
 from memory import Memory
 from io_handler import get_input, print_output
 
-# ControlInstructions class
 class ControlInstructions:
     def __init__(self, memory, cpu):
-        """
-        memory: Memory object
-        io_handler: object/module for I/O operations
-        cpu: CPU object (to access accumulator and instruction pointer)
-        """
         self.memory = memory
         self.cpu = cpu
 
     # READ instruction
     # Like STORE but from raw input
     def READ(self, address):
-        # Get user input
         word = input("Enter a 4-digit word:\n")
+        # Validate input
+        # Repeat if validation fails
+        # Store inputed value into memory location
         
 
     # WRITE instruction
@@ -39,20 +35,29 @@ class ControlInstructions:
     # BRANCH instruction
     def BRANCH(self, address):
         # Jump to memory address
+            # Set the program counter (programCounter) to address
+            # Set next 'word' to be ran in the instruction register (instructionReg)
         pass
 
     # BRANCHNEG instruction
     def BRANCHNEG(self, address):
         # Jump if accumulator < 0
+            # Check if accumulator < 0
+            # If not continue to next instruction
+            # Set the program counter (programCounter) to address
+            # Set next 'word' to be ran in the instruction register (instructionReg)
         pass
 
     # BRANCHZERO instruction
     def BRANCHZERO(self, address):
         # Jump if accumulator == 0
+            # Check if accumulator == 0
+            # If no continue to next instruction
+            # Set the program counter (programCounter) to address
+            # Set next 'word' to be ran in the instruciton register (instructionReg)
         pass
 
     # HALT instruction
     def HALT(self):
-        # Stop program execution
         self.cpu.done = True
         print("Program Finished...\n")
