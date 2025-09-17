@@ -8,8 +8,11 @@ class Memory:
         self.mem = [0] * self.size
 
     def __str__(self):
+        lines = []
         for index, x in enumerate(self.mem):
-            print(f"{index} - {x}")
+            if x != 0:
+                lines.append(f"{index} - {x}")
+        return "\n".join(lines) if lines else "Memory is empty"
         
     def get_value(self, address):
         refined_address = address.split("")
@@ -20,4 +23,4 @@ class Memory:
     
     def set_value(self, address, value):
         self.mem[address] = value
-        print("Value set...\n")
+        print("Value set...")
