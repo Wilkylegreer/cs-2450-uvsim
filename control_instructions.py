@@ -69,7 +69,7 @@ class ControlInstructions:
         "43":'HALT'
     }
 
-    def execute(self, opcode, accumulator, memoryLoc, memory):
+    def EXECUTE(self, opcode, accumulator, memoryLoc, memory):
         operation = self.OPCODE_DICT.get(opcode)
 
         if not operation:
