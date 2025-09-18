@@ -29,6 +29,17 @@ def run_program(memory):
         elif operation == 21: #STORE OPERATION
             #Stores value currently held by accumulator into specified memory location
             memory[memLocation] = accumulator
+         elif operation == 30: #ADD OPERATION
+            accumulator += memory[operand]
+        elif operation == 31: #SUBTRACT OPERATION
+            accumulator -= memory[memLocation]
+        elif operation == 32: #DIVIDE OPERATION
+            if memory[memLocation] == 0:
+                print("can't divide by zero")
+                break
+            accumulator //= memory[memLocation]
+        elif operation == 33: #MULTIPLY OPERATION
+            accumulator *= memory[memLocation]
         elif operation == 43:
             break
         else:
