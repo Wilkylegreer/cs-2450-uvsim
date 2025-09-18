@@ -5,17 +5,18 @@ class MathInstructions():
         self.memory = memory
       
     def add():
-        self.accumulator += self.memory[operand]
+        self.cpu.accumulator += self.memory.mem[address]
 
     def subtract():
-      self.accumulator -= self.memory[operand]
+      self.cpu.accumulator -= self.memory.mem[address]
 
     def divide():
-      if self.memory[operand] == 0:
+      if self.memory[address] == 0:
         print("can't divide by zero")
         break
-      self.accumulator //= self.memory[operand]
+      self.cpu.accumulator //= self.memory.mem[address]
   
     def multiply():
-      self.accumulator *= self.memory[operand]
-      
+      self.cpu.accumulator *= self.memory.mem[address]
+
+
