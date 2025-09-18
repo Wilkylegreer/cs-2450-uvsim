@@ -12,7 +12,7 @@ class MathInstructions():
         self.memory = memory
 
 
-    def execute(self, opcode, accumulator, memoryLoc, memory):
+    def EXECUTE(self, opcode, accumulator, memoryLoc, memory):
         operation = self.OPCODE_DICT.get(opcode)
 
         if not operation:
