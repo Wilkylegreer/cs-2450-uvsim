@@ -61,3 +61,25 @@ class ControlInstructions:
     def HALT(self):
         self.cpu.done = True
         print("Program Finished...\n")
+
+    OPCODE_DICT = {
+        "40":'BRANCH',
+        "41":'BRANCHNEG',
+        "42":'BRANCHZERO',
+        "43":'HALT'
+    }
+
+    def execute(self, opcode, accumulator, memoryLoc, memory):
+        operation = self.OPCODE_DICT.get(opcode)
+
+        if not operation:
+            raise ValueError(f"Unknown control operation: {opcode}")
+        
+        if operation == "BRANCH":
+            return self.BRANCH(self, opcode, accumulator, memoryLoc, memory)
+        elif operation == "BRANCHNEG":
+            return self.BRANCHNEG(self, opcode, accumulator, memoryLoc, memory)
+        elif operation == "BRANCHZERO":
+            return self.BRANCHZERO(self, opcode, accumulator, memoryLoc, memory)
+        elif operation == "HALT":
+            return self.HALT(self, opcode, accumulator, memoryLoc, memory)
