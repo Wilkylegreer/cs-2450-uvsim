@@ -1,6 +1,5 @@
 # control_instructions.py
 
-from memory import Memory
 from io_handler import get_input, print_output
 
 class ControlInstructions:
@@ -9,12 +8,14 @@ class ControlInstructions:
         self.cpu = cpu
 
     # READ instruction
-    # Like STORE but from raw input
     def READ(self, address):
         word = input("Enter a 4-digit word:\n")
-        # Validate input
-        # Repeat if validation fails
-        # Store inputed value into memory location
+        if len(word) < 4 or isinstance(int(word), int):
+            self.READ(address)
+        else:
+            self.memory.set_value(address, word)
+            print(self.memory)
+            print("Read/Store complete...\n")
         
 
     # WRITE instruction
@@ -34,28 +35,24 @@ class ControlInstructions:
 
     # BRANCH instruction
     def BRANCH(self, address):
-        # Jump to memory address
-            # Set the program counter (programCounter) to address
-            # Set next 'word' to be ran in the instruction register (instructionReg)
-        pass
+        self.cpu.programCounter = int(address)
+        self.cpu.instructionReg = self.memory.mem[address]
 
     # BRANCHNEG instruction
     def BRANCHNEG(self, address):
-        # Jump if accumulator < 0
-            # Check if accumulator < 0
-            # If not continue to next instruction
-            # Set the program counter (programCounter) to address
-            # Set next 'word' to be ran in the instruction register (instructionReg)
-        pass
+        if self.cpu.accumulator < 0:
+            self.cpu.programCounter = int(address)
+            self.cpu.instructionReg = self.memory.mem[address]
+        else:
+            print("Not negative to branch")
 
     # BRANCHZERO instruction
     def BRANCHZERO(self, address):
-        # Jump if accumulator == 0
-            # Check if accumulator == 0
-            # If no continue to next instruction
-            # Set the program counter (programCounter) to address
-            # Set next 'word' to be ran in the instruciton register (instructionReg)
-        pass
+        if self.cpu.accumulator == 0:
+            self.cpu.programCounter = int(address)
+            self.cpu.instructionReg = self.memory.mem[address]
+        else:
+            print("Not zero to branch")
 
     # HALT instruction
     def HALT(self):

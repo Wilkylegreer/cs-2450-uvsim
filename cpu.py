@@ -34,3 +34,5 @@ class CPU:
         while not self.done:
             instruction = self.fetch()
             self.decode_execute(instruction)
+            if self.programCounter > 99:
+                self.controlInstruct.HALT()
