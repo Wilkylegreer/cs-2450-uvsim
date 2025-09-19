@@ -6,6 +6,9 @@ class Memory:
 
         self.mem = [0] * self.size
 
+    def reset(self):
+        self.mem = [0] * self.size
+
     def __str__(self):
         lines = []
         for index, x in enumerate(self.mem):

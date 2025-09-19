@@ -11,7 +11,6 @@ class MathInstructions():
     def __init__(self, memory):
         self.memory = memory
 
-
     def execute(self, opcode, accumulator, memoryLoc):
         operation = self.OPCODE_DICT.get(str(opcode))
 
@@ -32,16 +31,16 @@ class MathInstructions():
         return accumulator
 
     def SUBTRACT(self, accumulator, memoryLoc):
-        accumulator -= self.memory.mem[memoryLoc]
+        accumulator -= int(self.memory.mem[memoryLoc])
         return accumulator
 
     def DIVIDE(self, accumulator, memoryLoc):
-        if self.memory[memoryLoc] == 0:
-            #print("can't divide by zero")
-            return ValueError("Cannot divide by zero!")
-        accumulator //= self.memory.mem[memoryLoc]
+        divisor = int(self.memory.get_value(memoryLoc))
+        if divisor == 0:
+            raise ZeroDivisionError("Cannot divide by zero")
+        accumulator //= divisor
         return accumulator
   
     def MULTIPLY(self, accumulator, memoryLoc):
-        accumulator *= self.memory.mem[memoryLoc]
+        accumulator *= int(self.memory.mem[memoryLoc])
         return accumulator
