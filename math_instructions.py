@@ -12,7 +12,7 @@ class MathInstructions():
         self.memory = memory
 
 
-    def EXECUTE(self, opcode, accumulator, memoryLoc):
+    def execute(self, opcode, accumulator, memoryLoc):
         operation = self.OPCODE_DICT.get(opcode)
 
         if not operation:
@@ -41,3 +41,5 @@ class MathInstructions():
   
     def multiply(self, accumulator, memoryLoc):
         accumulator *= self.memory.mem[memoryLoc]
+
+    #bust in my butt
