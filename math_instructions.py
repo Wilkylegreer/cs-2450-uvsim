@@ -12,7 +12,7 @@ class MathInstructions:
 
     def divide(self, accumulator, memLoc):
         if self.memory.mem[memLoc] == 0:
-            raise ZeroDivisionError("Cannot divide by zero."
+            raise ZeroDivisionError("Cannot divide by zero.")
       return accumulator // self.memory.mem[memLoc]
   
     def multiply(self, accumulator, memLoc):
