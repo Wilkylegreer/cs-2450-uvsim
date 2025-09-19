@@ -36,8 +36,9 @@ Programs are written in BasicML and must be loaded into memory starting at locat
 - Last 2 digits → Memory address operand  
 
 ## 📝 Example:
----
 2007   # LOAD from memory location 07
+
+---
 
 ## ⚙️ Prerequisites
 - Python **3.8+**
