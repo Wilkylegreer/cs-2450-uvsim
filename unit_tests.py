@@ -60,3 +60,6 @@ class TestMath(unittest.TestCase):
     accumulator = 5
     accumulator = self.math.multiply(accumulator, 33)
     self.assertEqual(accumulator, 0)
+
+if __name__ == "__main__":
+    unittest.main()
