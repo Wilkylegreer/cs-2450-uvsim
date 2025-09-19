@@ -22,8 +22,6 @@ def main():
 
     proLoader = ProgramLoader(memory)
 
-    print("Everything Loaded")
-
     userInput = 1 # get_input()
 
     # Load program
@@ -37,7 +35,7 @@ def main():
         print("No Option Selected...")
 
     # Start CPU execution loop until HALT
-    # cpu.run()
+    cpu.run()
 
     print("Main loop finished...")
 

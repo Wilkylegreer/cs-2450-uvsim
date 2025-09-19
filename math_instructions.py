@@ -13,33 +13,35 @@ class MathInstructions():
 
 
     def execute(self, opcode, accumulator, memoryLoc):
-        operation = self.OPCODE_DICT.get(opcode)
+        operation = self.OPCODE_DICT.get(str(opcode))
 
         if not operation:
             raise ValueError(f"Unknown mathematical operation: {opcode}")
         
         if operation == "ADD":
-            return self.add(self, accumulator, memoryLoc)
+            return self.ADD(accumulator, memoryLoc)
         elif operation == "SUBTRACT":
-            return self.subtract(self, accumulator, memoryLoc)
+            return self.SUBTRACT(accumulator, memoryLoc)
         elif operation == "DIVIDE":
-            return self.divide(self, accumulator, memoryLoc)
+            return self.DIVIDE(accumulator, memoryLoc)
         elif operation == "MULTIPLY":
-            return self.multiply(self, accumulator, memoryLoc)
+            return self.MULTIPLY(accumulator, memoryLoc)
     
-    def add(self, accumulator, memoryLoc):
-        accumulator += self.memory.mem[memoryLoc]
+    def ADD(self, accumulator, memoryLoc):
+        accumulator += int(self.memory.mem[memoryLoc])
+        return accumulator
 
-    def subtract(self, accumulator, memoryLoc):
+    def SUBTRACT(self, accumulator, memoryLoc):
         accumulator -= self.memory.mem[memoryLoc]
+        return accumulator
 
-    def divide(self, accumulator, memoryLoc):
+    def DIVIDE(self, accumulator, memoryLoc):
         if self.memory[memoryLoc] == 0:
             #print("can't divide by zero")
             return ValueError("Cannot divide by zero!")
         accumulator //= self.memory.mem[memoryLoc]
+        return accumulator
   
-    def multiply(self, accumulator, memoryLoc):
+    def MULTIPLY(self, accumulator, memoryLoc):
         accumulator *= self.memory.mem[memoryLoc]
-
-        #Very cool
+        return accumulator

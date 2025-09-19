@@ -66,17 +66,17 @@ class ControlInstructions:
         "43":'HALT'
     }
 
-    def EXECUTE(self, opcode, accumulator, memoryLoc, memory):
-        operation = self.OPCODE_DICT.get(opcode)
+    def execute(self, opcode, accumulator, memoryLoc):
+        operation = self.OPCODE_DICT.get(str(opcode))
 
         if not operation:
             raise ValueError(f"Unknown control operation: {opcode}")
         
         if operation == "BRANCH":
-            return self.BRANCH(self, opcode, accumulator, memoryLoc, memory)
+            return self.BRANCH(memoryLoc)
         elif operation == "BRANCHNEG":
-            return self.BRANCHNEG(self, opcode, accumulator, memoryLoc, memory)
+            return self.BRANCHNEG(memoryLoc)
         elif operation == "BRANCHZERO":
-            return self.BRANCHZERO(self, opcode, accumulator, memoryLoc, memory)
+            return self.BRANCHZERO(memoryLoc)
         elif operation == "HALT":
-            return self.HALT(self, opcode, accumulator, memoryLoc, memory)
+            self.HALT()
