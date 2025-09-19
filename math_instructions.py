@@ -1,22 +1,34 @@
 #math_instructions.py
 
-class MathInstructions():
+class MathInstructions:
     def __init__(self, memory):
         self.memory = memory
       
-    def add(self, address):
-        self.cpu.accumulator += self.memory.mem[address]
+    def add(self, accumulator, memLoc):
+        return accumulator + self.memory.mem[memLoc]
 
-    def subtract(self, address):
-      self.cpu.accumulator -= self.memory.mem[address]
+    def subtract(self, accumulator, memLoc):
+      return accumulator - self.memory.mem[memLoc]
 
-    def divide(self, address):
-      if self.memory[address] == 0:
+    def divide(self, accumulator, memLoc):
+      if self.memory.mem[memLoc] == 0:
         print("can't divide by zero")
-        break
-      self.cpu.accumulator //= self.memory.mem[address]
+      return accumulator // self.memory.mem[memLoc]
   
-    def multiply(self, address):
-      self.cpu.accumulator *= self.memory.mem[address]
+    def multiply(self, accumulator, memLoc):
+      return accumulator * self.memory.mem[memLoc]
+
+    def execute(self, opcode, accumulator, memLoc):
+        if opcode == 30: #ADD
+            return self.add(accumulator, memLoc)
+        elif opcode == 31: #SUBTRACT
+            return self.subtract(accumulator, memLoc)
+        elif opcode == 32: #DIVIDE
+            return self.divide(accumulator, memLoc)
+        elif opcode == 33: #MULTIPLY
+            return self.multiply(accumulator, memLoc)
+        else:
+            raise ValueError(f"Unknown operation")
+    
 
 
