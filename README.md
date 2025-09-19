@@ -14,6 +14,20 @@ Programs are written in BasicML and must be loaded into memory starting at locat
 
 ---
 
+## ⚙️ Prerequisites
+- Python **3.8+**
+- Command-line access
+
+---
+
+## 🚀 How to Run
+1. Open a terminal and navigate to the project folder.  
+2. Run the simulator with a program file:  
+   ```bash
+   python main.py [example_files/"any example in example files"]
+
+---
+
 ## 🖥 Instruction Set
 
 | Code | Mnemonic    | Description |
@@ -33,21 +47,12 @@ Programs are written in BasicML and must be loaded into memory starting at locat
 
 ➡️ **Instruction format:**  
 - First 2 digits → Operation code  
-- Last 2 digits → Memory address operand  
+- Last 2 digits → Memory address operand
 
 ## 📝 Example:
 2007   # LOAD from memory location 07
 
 ---
 
-## ⚙️ Prerequisites
-- Python **3.8+**
-- Command-line access
-
----
-
-## 🚀 How to Run
-1. Open a terminal and navigate to the project folder.  
-2. Run the simulator with a program file:  
-   ```bash
-   python main.py [example_files/"any example in example files"]
+## 👤 Authors
+- Developed by Darby Thomas, Ethan Rasmussen, and Kyle Greer
