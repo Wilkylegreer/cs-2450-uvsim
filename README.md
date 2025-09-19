@@ -50,7 +50,7 @@ Programs are written in BasicML and must be loaded into memory starting at locat
 - Last 2 digits → Memory address operand
 
 ## 📝 Example:
-- 2007 - LOAD(20) from memory location(07)
+- 2007 → LOAD(20) from memory location(07)
 
 ---
 
