@@ -29,15 +29,12 @@ class ProgramLoader:
         self.memory = memory
 
     def load_from_file(self, filename):
-        try:
-            with open(filename, "r") as file:
-                allLines = file.readlines()
-                allLines = lineCleanUp(allLines)
-                if lineValidation(allLines):
-                    for index, x in enumerate(allLines):
-                        self.memory.set_value(index, x)
-                else:
-                    print("Error: Invalid program file")
-                print(self.memory)
-        except FileNotFoundError:
-            print("Error: File was not found")
+        with open(filename, "r") as file:
+            allLines = file.readlines()
+            allLines = lineCleanUp(allLines)
+            if lineValidation(allLines):
+                for index, x in enumerate(allLines):
+                    self.memory.set_value(index, x)
+            else:
+                print("Error: Invalid program file")
+            print(self.memory)

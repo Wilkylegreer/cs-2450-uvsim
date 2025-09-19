@@ -1,4 +1,5 @@
 # main.py
+from io_handler import get_file
 
 from memory import Memory
 from cpu import CPU
@@ -22,22 +23,19 @@ def main():
 
     proLoader = ProgramLoader(memory)
 
-    userInput = 1 # get_input()
-
-    # Load program
-    if int(userInput) == 1:
-        proLoader.load_from_file("test_files/Test1.txt")
-    elif int(userInput) == 2:
-        proLoader.load_from_file("test_files/Test2.txt")
-    elif int(userInput) == 3:
-        proLoader.load_from_file("test_files/Test3.txt")
-    else:
-        print("No Option Selected...")
+    while True:
+        userInput = get_file()
+        try:
+            proLoader.load_from_file(userInput)
+            break
+        except Exception as e:
+            print(f"Error loading file '{userInput}': {e}")
+            print("Please try again.")
 
     # Start CPU execution loop until HALT
     cpu.run()
 
-    print("Main loop finished...")
+    print(".")
 
 if __name__ == "__main__":
     main()

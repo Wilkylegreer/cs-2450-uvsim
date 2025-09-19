@@ -24,7 +24,8 @@ Programs are written in BasicML and must be loaded into memory starting at locat
 1. Open a terminal and navigate to the project folder.  
 2. Run the simulator with a program file:  
    ```bash
-   python main.py [example_files/"any example in example files"]
+   python main.py
+3. Type in the file path (Example: test_files/Test6.txt) and watch the program run!
 
 ---
 
