@@ -22,7 +22,7 @@ Programs are written in BasicML and must be loaded into memory starting at locat
 
 ## 🚀 How to Run
 1. Open a terminal and navigate to the project folder.  
-2. Run the simulator with a program file:  
+2. Run the simulator:  
    ```bash
    python main.py
 3. Type in the file path (Example: test_files/Test6.txt) and watch the program run!
