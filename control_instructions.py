@@ -35,13 +35,13 @@ class ControlInstructions:
 
     # BRANCH instruction
     def BRANCH(self, address):
-        self.cpu.programCounter = int(address)
-        self.cpu.instructionReg = self.memory.mem[address]
+        self.cpu.programCounter = (int(address) - 1)
+        self.cpu.instructionReg = self.memory.mem[int(address)]
 
     # BRANCHNEG instruction
     def BRANCHNEG(self, address):
         if self.cpu.accumulator < 0:
-            self.cpu.programCounter = int(address)
+            self.cpu.programCounter = (int(address) - 1)
             self.cpu.instructionReg = self.memory.mem[address]
         else:
             print("Not negative to branch")
@@ -49,7 +49,7 @@ class ControlInstructions:
     # BRANCHZERO instruction
     def BRANCHZERO(self, address):
         if self.cpu.accumulator == 0:
-            self.cpu.programCounter = int(address)
+            self.cpu.programCounter = (int(address) - 1)
             self.cpu.instructionReg = self.memory.mem[address]
         else:
             print("Not zero to branch")

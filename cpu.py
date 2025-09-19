@@ -15,8 +15,8 @@ class CPU:
         self.mathInstruct = mathInstruct
 
     def fetch(self):
-        instruction = self.memory.read(self.instructionReg)
         self.instructionReg += 1
+        instruction = self.memory.read(self.instructionReg)
         return instruction
     
     def decode_execute(self, instruction):
