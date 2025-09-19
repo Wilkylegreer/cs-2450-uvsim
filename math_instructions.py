@@ -41,5 +41,3 @@ class MathInstructions():
   
     def multiply(self, accumulator, memoryLoc):
         accumulator *= self.memory.mem[memoryLoc]
-
-    #bust in my butt
