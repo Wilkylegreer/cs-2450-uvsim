@@ -18,7 +18,7 @@ class MathInstructions():
             raise ValueError(f"Unknown mathematical operation: {opcode}")
         
         if operation == "ADD":
-            return self.ADD(accumulator, memoryLoc)
+            return self.ADD(int(accumulator), memoryLoc)
         elif operation == "SUBTRACT":
             return self.SUBTRACT(accumulator, memoryLoc)
         elif operation == "DIVIDE":

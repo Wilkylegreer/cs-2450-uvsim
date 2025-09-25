@@ -9,12 +9,13 @@ class ControlInstructions:
 
     # READ instruction
     def READ(self, address):
-        word = input("Enter a 4-digit word:\n").strip()
-        if word.lstrip("+-").isdigit() and len(word.lstrip("+-")) <= 4:
-            self.memory.set_value(address, int(word))
-        else:
-            print("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
-            self.READ(address)
+        while True:
+            word = input("Enter a 4-digit word:\n").strip()
+            if word.lstrip("+-").isdigit() and len(word.lstrip("+-")) <= 4:
+                self.memory.set_value(address, int(word))
+                break
+            else:
+                print("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
         
 
     # WRITE instruction

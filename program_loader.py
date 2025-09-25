@@ -2,7 +2,7 @@
 
 def lineCleanUp(lines):
     for index, x in enumerate(lines):
-        cleaned = x.replace("+", "")
+        cleaned = x.lstrip("+-")
         cleaned = cleaned.strip()
         lines[index] = cleaned
     return lines
