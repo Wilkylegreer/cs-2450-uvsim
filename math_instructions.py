@@ -28,19 +28,19 @@ class MathInstructions():
     
     def ADD(self, accumulator, memoryLoc):
         accumulator += int(self.memory.mem[memoryLoc])
-        return accumulator
+        return accumulator % 10000
 
     def SUBTRACT(self, accumulator, memoryLoc):
         accumulator -= int(self.memory.mem[memoryLoc])
-        return accumulator
+        return accumulator % 10000
 
     def DIVIDE(self, accumulator, memoryLoc):
         divisor = int(self.memory.get_value(memoryLoc))
         if divisor == 0:
             raise ZeroDivisionError("Cannot divide by zero")
         accumulator //= divisor
-        return accumulator
+        return accumulator % 10000
   
     def MULTIPLY(self, accumulator, memoryLoc):
         accumulator *= int(self.memory.mem[memoryLoc])
-        return accumulator
+        return accumulator % 10000
