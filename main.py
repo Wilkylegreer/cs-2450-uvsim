@@ -25,6 +25,8 @@ def main():
     program_loaded = False
     while True:
         userInput = get_file()
+        if userInput == "quit":
+            break
         try:
             program_loaded = proLoader.load_from_file(userInput)
             if program_loaded:

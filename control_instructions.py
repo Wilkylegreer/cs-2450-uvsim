@@ -41,7 +41,7 @@ class ControlInstructions:
 
     # BRANCHNEG instruction
     def BRANCHNEG(self, address):
-        if self.cpu.accumulator < 0:
+        if int(self.cpu.accumulator) < 0:
             self.cpu.programCounter = (int(address))
             self.cpu.instructionReg = self.memory.mem[address]
         else:
@@ -61,14 +61,14 @@ class ControlInstructions:
         print("HALT")
 
     OPCODE_DICT = {
-        "10":'READ',
-        "11":'WRITE',
-        "20":'LOAD',
-        "21":'STORE',
-        "40":'BRANCH',
-        "41":'BRANCHNEG',
-        "42":'BRANCHZERO',
-        "43":'HALT'
+        "10": 'READ',
+        "11": 'WRITE',
+        "20": 'LOAD',
+        "21": 'STORE',
+        "40": 'BRANCH',
+        "41": 'BRANCHNEG',
+        "42": 'BRANCHZERO',
+        "43": 'HALT'
     }
 
     def execute(self, opcode, memoryLoc):
