@@ -1,6 +1,7 @@
 # main.py
 from io_handler import get_file
-
+import tkinter as tk
+from gui import UvsimGUI
 from memory import Memory
 from cpu import CPU
 from control_instructions import ControlInstructions
@@ -12,6 +13,11 @@ def print_mem(mem):
         print(f"{index} - {x}")
 
 def main():
+    #GUI Setup
+    root = tk.Tk()
+    app = UvsimGUI(root)
+    root.mainloop()
+
     # Initializations
     memory = Memory()
     cpu = CPU(memory)
@@ -36,6 +42,7 @@ def main():
     cpu.run()
 
     print(".")
+
 
 if __name__ == "__main__":
     main()
