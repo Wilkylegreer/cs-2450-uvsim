@@ -1,5 +1,14 @@
 #math_instructions.py
 
+def truncate(value):
+    if value > 0:
+        return value % 10000
+    elif value < 0:
+        value *= -1
+        value = value % 10000
+        return value * -1
+    return value
+
 class MathInstructions():
     OPCODE_DICT = {
         "30":'ADD',
@@ -28,19 +37,19 @@ class MathInstructions():
     
     def ADD(self, accumulator, memoryLoc):
         accumulator += int(self.memory.mem[memoryLoc])
-        return accumulator % 10000
+        return truncate(accumulator)
 
     def SUBTRACT(self, accumulator, memoryLoc):
         accumulator -= int(self.memory.mem[memoryLoc])
-        return accumulator % 10000
+        return truncate(accumulator)
 
     def DIVIDE(self, accumulator, memoryLoc):
         divisor = int(self.memory.get_value(memoryLoc))
         if divisor == 0:
             raise ZeroDivisionError("Cannot divide by zero")
         accumulator //= divisor
-        return accumulator % 10000
-  
+        return truncate(accumulator)
+
     def MULTIPLY(self, accumulator, memoryLoc):
         accumulator *= int(self.memory.mem[memoryLoc])
-        return accumulator % 10000
+        return truncate(accumulator)
