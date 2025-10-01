@@ -1,4 +1,3 @@
-# main.py
 from io_handler import get_file
 
 from memory import Memory
@@ -23,17 +22,25 @@ def main():
 
     proLoader = ProgramLoader(memory)
 
+    program_loaded = False
     while True:
         userInput = get_file()
         try:
-            proLoader.load_from_file(userInput)
-            break
+            program_loaded = proLoader.load_from_file(userInput)
+            if program_loaded:
+                break
+            else:
+                # Handles bad lines
+                print(f"Error loading file '{userInput}': Invalid program")
+                print("Please try again.")
         except Exception as e:
+            # Handles bad file names
             print(f"Error loading file '{userInput}': {e}")
             print("Please try again.")
 
-    # Start CPU execution loop until HALT
-    cpu.run()
+    # Start if loaded right
+    if program_loaded:
+        cpu.run()
 
     print(".")
 

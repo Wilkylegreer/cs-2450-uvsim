@@ -20,11 +20,11 @@ class MathInstructions():
         if operation == "ADD":
             return self.ADD(int(accumulator), memoryLoc)
         elif operation == "SUBTRACT":
-            return self.SUBTRACT(accumulator, memoryLoc)
+            return self.SUBTRACT(int(accumulator), memoryLoc)
         elif operation == "DIVIDE":
-            return self.DIVIDE(accumulator, memoryLoc)
+            return self.DIVIDE(int(accumulator), memoryLoc)
         elif operation == "MULTIPLY":
-            return self.MULTIPLY(accumulator, memoryLoc)
+            return self.MULTIPLY(int(accumulator), memoryLoc)
     
     def ADD(self, accumulator, memoryLoc):
         accumulator += int(self.memory.mem[memoryLoc])

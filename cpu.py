@@ -29,7 +29,7 @@ class CPU:
         elif opcode in [10, 11, 20, 21, 40, 41, 42, 43]:
             self.controlInstruct.execute(opcode, memoryLoc)
         else:
-            print(f"Opcode not recognized Opcode: {opcode} + Instruction: {instruction} - CPU")
+            print(f"Skipping 'word' - CPU")
 
     def run(self):
         while not self.done:

@@ -2,8 +2,11 @@
 
 def lineCleanUp(lines):
     for index, x in enumerate(lines):
-        cleaned = x.lstrip("+-")
-        cleaned = cleaned.strip()
+        x = x.strip()
+        if x.startswith("+") or x.startswith("-"):
+            cleaned = x
+        else:
+            cleaned = "+" + x  # assume positive if no sign given
         lines[index] = cleaned
     return lines
 
@@ -12,15 +15,9 @@ def lineValidation(lines):
         print("Out of bounds")
         return False
     for x in lines:
-        if len(x) > 4:
-            print("Longer than 4")
-        opCode = x[:2]
-        memLoc = x[-2:]
-        if int(opCode) not in [00, 10, 11, 20, 21, 30, 31, 32, 33, 40, 41, 42, 43]:
-            print(f"Opcode not recognized - {opCode}")
-            return False
-        if int(memLoc) not in range(0, 99):
-            print("Memory Overflow")
+        stripped_line = x.lstrip("+-")
+        if len(stripped_line) != 4 or not stripped_line.isdigit():
+            print(f"Invalid line: {x}")
             return False
     return True
 
@@ -35,6 +32,8 @@ class ProgramLoader:
             if lineValidation(allLines):
                 for index, x in enumerate(allLines):
                     self.memory.set_value(index, x)
+                print(self.memory)
+                return True
             else:
-                print("Error: Invalid program file")
-            print(self.memory)
+                print("-Error Loading File-")
+                return False
