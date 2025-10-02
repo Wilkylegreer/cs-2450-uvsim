@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 import sys
 from io_handler import get_file
 
@@ -12,11 +12,28 @@ class UvsimGUI:
 
         self.create_widgets()
 
+    def reset(self):
+        self.cpu.reset()
+        self.memory.reset()
+        self.load_file()
+        self.log_message("Program reset.")
+
+    def load_file(self):
+        try:
+            loaded = self.loader.load_from_file(self.selected_file)
+            if loaded:
+                self.log_message("Program loaded successfully.")
+                self.log_message(str(self.memory))
+            else:
+                self.log_message("Error: Invalid program file.")
+        except Exception as e:
+            self.log_message(f"Error loading file: {e}")
+
     def create_widgets(self):
         # Menu Bar
         menubar = tk.Menu(self.root)
         file_menu = tk.Menu(menubar, tearoff=0)
-        file_menu.add_command(label="Open", command=lambda: None)
+        file_menu.add_command(label="Open", command=self.open_file)
         file_menu.add_command(label="Save", command=lambda: None)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
@@ -40,9 +57,9 @@ class UvsimGUI:
         controls_frame.pack(fill=tk.X, pady=(0, 10))
 
         btn_load = ttk.Button(controls_frame, text="Load Program", command=lambda: None)
-        btn_run = ttk.Button(controls_frame, text="Run", command=lambda: None) # Starts the program from the beginning of the input file.
+        btn_run = ttk.Button(controls_frame, text="Run", command=lambda: self.cpu.run()) # Starts the program from the beginning of the input file.
         btn_step = ttk.Button(controls_frame, text="Step", command=lambda: None) # Steps through the program
-        btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: None) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
+        btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: self.reset()) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
         btn_exit = ttk.Button(controls_frame, text="Exit", command=sys.exit) # Closes the window and stops the program
 
         btn_load.grid(row=0, column=0, padx=5, pady=5)
@@ -71,19 +88,44 @@ class UvsimGUI:
         for i in range(10):
             self.memory_tree.insert("", tk.END, values=(f"{i:03}", "0000"))
 
-def log_message(self, message: str):
-    self.output_text.configure(state=tk.NORMAL)
-    self.output_text.insert(tk.END, message + "\n")
-    self.output_text.see(tk.END)                  # auto scroller :)
-    self.output_text.configure(state=tk.DISABLED)
+    def open_file(self):
+        filepath = filedialog.askopenfilename(
+            title="Open Program File",
+            filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+        )
+        if filepath:
+            self.selected_file = filepath
+            self.log_message(f"Opened file: {filepath}")
+
+            # Simple program loading
+            from memory import Memory
+            from cpu import CPU
+            from control_instructions import ControlInstructions
+            from math_instructions import MathInstructions
+            from program_loader import ProgramLoader
+
+            self.memory = Memory()
+            self.cpu = CPU(self.memory, self)
+            conInstruct = ControlInstructions(self.memory, self.cpu, self)
+            mathInstruct = MathInstructions(self.memory)
+            self.cpu.set_instructions(conInstruct, mathInstruct)
+            self.loader = ProgramLoader(self.memory, self)
+
+            self.load_file()
+
+    def log_message(self, message: str):
+        self.output_text.configure(state=tk.NORMAL)
+        self.output_text.insert(tk.END, message + "\n")
+        self.output_text.see(tk.END)                  # auto scroller :)
+        self.output_text.configure(state=tk.DISABLED)
 
 
-def main():
-    root = tk.Tk()
-    app = UvsimGUI(root)
-    root.mainloop()
+# def main():
+#     root = tk.Tk()
+#     app = UvsimGUI(root)
+#     root.mainloop()
     
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

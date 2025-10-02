@@ -2,10 +2,17 @@
 from time import sleep
 
 class CPU:
-    def __init__(self, memory):
+    def __init__(self, memory, gui):
         self.controlInstruct = None
         self.mathInstruct = None
         self.memory = memory
+        self.gui = gui
+        self.accumulator = 0
+        self.programCounter = 0
+        self.instructionReg = 0
+        self.done = False
+
+    def reset(self):
         self.accumulator = 0
         self.programCounter = 0
         self.instructionReg = 0
@@ -29,7 +36,7 @@ class CPU:
         elif opcode in [10, 11, 20, 21, 40, 41, 42, 43]:
             self.controlInstruct.execute(opcode, memoryLoc)
         else:
-            print(f"Skipping 'word' - CPU")
+            self.gui.log_message(f"Skipping 'word' - CPU")
 
     def run(self):
         while not self.done:

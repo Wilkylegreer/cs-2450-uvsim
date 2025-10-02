@@ -1,15 +1,5 @@
-from io_handler import get_file
 import tkinter as tk
 from gui import UvsimGUI
-from memory import Memory
-from cpu import CPU
-from control_instructions import ControlInstructions
-from program_loader import ProgramLoader
-from math_instructions import MathInstructions
-
-def print_mem(mem):
-    for index, x in enumerate(mem.mem):
-        print(f"{index} - {x}")
 
 def main():
     #GUI Setup
@@ -17,40 +7,32 @@ def main():
     app = UvsimGUI(root)
     root.mainloop()
 
-    # Initializations
-    memory = Memory()
-    cpu = CPU(memory)
+    # # Initializations
+    # memory = Memory()
+    # cpu = CPU(memory)
 
-    conInstruct = ControlInstructions(memory, cpu)
-    mathInstruct = MathInstructions(memory)
+    # conInstruct = ControlInstructions(memory, cpu)
+    # mathInstruct = MathInstructions(memory)
 
-    cpu.set_instructions(conInstruct, mathInstruct)
+    # cpu.set_instructions(conInstruct, mathInstruct)
 
-    proLoader = ProgramLoader(memory)
+    # proLoader = ProgramLoader(memory)
 
-    program_loaded = False
-    while True:
-        userInput = get_file()
-        if userInput == "quit":
-            break
-        try:
-            program_loaded = proLoader.load_from_file(userInput)
-            if program_loaded:
-                break
-            else:
-                # Handles bad lines
-                print(f"Error loading file '{userInput}': Invalid program")
-                print("Please try again.")
-        except Exception as e:
-            # Handles bad file names
-            print(f"Error loading file '{userInput}': {e}")
-            print("Please try again.")
+    # app.program_loaded = False
+    # app.log_message("Test1")
+    # if hasattr(app, "selected_file"):
+    #     try:
+    #         app.program_loaded = proLoader.load_from_file(app.selected_file)
+    #         if not app.program_loaded:
+    #             print(f"Error loading file '{app.selected_file}': Invalid program")
+    #     except Exception as e:
+    #         print(f"Error loading file '{app.selected_file}': {e}")
 
-    # Start if loaded right
-    if program_loaded:
-        cpu.run()
+    # # Start if loaded right
+    # if app.program_loaded:
+    #     cpu.run()
 
-    print(".")
+    # print(".")
 
 
 if __name__ == "__main__":

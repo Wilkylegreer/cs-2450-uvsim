@@ -1,11 +1,10 @@
 # control_instructions.py
 
-from io_handler import print_output
-
 class ControlInstructions:
-    def __init__(self, memory, cpu):
+    def __init__(self, memory, cpu, gui):
         self.memory = memory
         self.cpu = cpu
+        self.gui = gui
 
     # READ instruction
     def READ(self, address):
@@ -15,24 +14,24 @@ class ControlInstructions:
                 self.memory.set_value(address, int(word))
                 break
             else:
-                print("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
+                self.gui.log_message("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
         
 
     # WRITE instruction
     def WRITE(self, address):
         value = self.memory.get_value(address)
-        print_output(f"WRITE Output: {value}")
+        self.gui.log_message(f"WRITE Output: {value}")
 
     # LOAD instruction
     def LOAD(self, address):
         self.cpu.accumulator = self.memory.mem[address]
-        print(f"Accumulator set to {self.cpu.accumulator}")
+        self.gui.log_message(f"Accumulator set to {self.cpu.accumulator}")
 
     # STORE instruction
     def STORE(self, address):
         self.memory.set_value(address, self.cpu.accumulator)
-        print("\n\n\nNewly")
-        print(self.memory)
+        self.gui.log_message("\n\n\nNewly")
+        self.gui.log_message(str(self.memory))
 
     # BRANCH instruction
     def BRANCH(self, address):
@@ -45,7 +44,7 @@ class ControlInstructions:
             self.cpu.programCounter = (int(address))
             self.cpu.instructionReg = self.memory.mem[address]
         else:
-            print("Not negative to branch")
+            self.gui.log_message("Not negative to branch")
 
     # BRANCHZERO instruction
     def BRANCHZERO(self, address):
@@ -53,12 +52,12 @@ class ControlInstructions:
             self.cpu.programCounter = (int(address))
             self.cpu.instructionReg = self.memory.mem[address]
         else:
-            print("Not zero to branch")
+            self.gui.log_message("Not zero to branch")
 
     # HALT instruction
     def HALT(self):
         self.cpu.done = True
-        print("HALT")
+        self.gui.log_message("HALT")
 
     OPCODE_DICT = {
         "10": 'READ',
