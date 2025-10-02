@@ -1,0 +1,89 @@
+import tkinter as tk
+from tkinter import ttk
+import sys
+from io_handler import get_file
+
+class UvsimGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("UVSim Simulator")
+        self.root.geometry("900x600")
+        self.root.configure(padx=10, pady=10)
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Menu Bar
+        menubar = tk.Menu(self.root)
+        file_menu = tk.Menu(menubar, tearoff=0)
+        file_menu.add_command(label="Open", command=lambda: None)
+        file_menu.add_command(label="Save", command=lambda: None)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.root.quit)
+        menubar.add_cascade(label="File", menu=file_menu)
+
+        help_menu = tk.Menu(menubar, tearoff=0)
+        help_menu.add_command(label="About", command=lambda: None)
+        menubar.add_cascade(label="Help", menu=help_menu)
+        self.root.config(menu=menubar)
+
+        # Main layout frames
+        main_frame = ttk.Frame(self.root, padding=(5, 5, 5, 5))
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Left frame for controls and output
+        left_frame = ttk.Frame(main_frame)
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
+
+        # Program controls
+        controls_frame = ttk.LabelFrame(left_frame, text="Program Controls", padding=(10, 10))
+        controls_frame.pack(fill=tk.X, pady=(0, 10))
+
+        btn_load = ttk.Button(controls_frame, text="Load Program", command=lambda: None)
+        btn_run = ttk.Button(controls_frame, text="Run", command=lambda: None) # Starts the program from the beginning of the input file.
+        btn_step = ttk.Button(controls_frame, text="Step", command=lambda: None) # Steps through the program
+        btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: None) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
+        btn_exit = ttk.Button(controls_frame, text="Exit", command=sys.exit) # Closes the window and stops the program
+
+        btn_load.grid(row=0, column=0, padx=5, pady=5)
+        btn_run.grid(row=0, column=1, padx=5, pady=5)
+        btn_step.grid(row=0, column=2, padx=5, pady=5)
+        btn_reset.grid(row=0, column=3, padx=5, pady=5)
+        btn_exit.grid(row=0, column=4, padx=5, pady=5)
+
+        # Output/log display
+        output_frame = ttk.LabelFrame(left_frame, text="Output / Log", padding=(10, 10))
+        output_frame.pack(fill=tk.BOTH, expand=True)
+        self.output_text = tk.Text(output_frame, height=20, wrap=tk.WORD, state=tk.DISABLED)
+        self.output_text.pack(fill=tk.BOTH, expand=True)
+
+        # Right frame for memory/registers
+        right_frame = ttk.LabelFrame(main_frame, text="Memory / Registers", padding=(10, 10))
+        right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=False)
+
+        columns = ("Address", "Value")
+        self.memory_tree = ttk.Treeview(right_frame, columns=columns, show="headings", height=25)
+        for col in columns:
+            self.memory_tree.heading(col, text=col)
+            self.memory_tree.column(col, width=80, anchor=tk.CENTER)
+        self.memory_tree.pack(fill=tk.BOTH, expand=True)
+        # Placeholder: Insert sample data
+        for i in range(10):
+            self.memory_tree.insert("", tk.END, values=(f"{i:03}", "0000"))
+
+def log_message(self, message: str):
+    self.output_text.configure(state=tk.NORMAL)
+    self.output_text.insert(tk.END, message + "\n")
+    self.output_text.see(tk.END)                  # auto scroller :)
+    self.output_text.configure(state=tk.DISABLED)
+
+
+def main():
+    root = tk.Tk()
+    app = UvsimGUI(root)
+    root.mainloop()
+    
+
+
+if __name__ == "__main__":
+    main()
