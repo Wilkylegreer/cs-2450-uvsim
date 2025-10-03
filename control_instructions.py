@@ -9,7 +9,7 @@ class ControlInstructions:
     # READ instruction
     def READ(self, address):
         while True:
-            word = input("Enter a 4-digit word:\n").strip()
+            word = self.gui.input_entry.get()
             if word.lstrip("+-").isdigit() and len(word.lstrip("+-")) <= 4:
                 self.memory.set_value(address, int(word))
                 break

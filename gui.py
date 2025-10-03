@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
 import sys
-from io_handler import get_file
 
 class UvsimGUI:
     def __init__(self, root):
@@ -20,7 +19,6 @@ class UvsimGUI:
 
     def submit_input(self):
         user_input = self.input_entry.get()
-        # validate user_input
         self.log_message(f"User Entered: {user_input}")
 
     def load_file(self):
