@@ -34,5 +34,6 @@ class ProgramLoader:
                 for index, x in enumerate(allLines):
                     self.memory.set_value(index, x)
                 return True
+                isfile = 1
             else:
                 return False

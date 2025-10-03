@@ -1,16 +1,7 @@
 # UVSim - BasicML Virtual Machine
 
 ## 📖 Description
-UVSim is a simulator for the **BasicML** machine language.  
-It is designed to help computer science students learn machine language and computer architecture.  
-
-The simulator includes:
-- A **CPU**
-- An **accumulator**
-- **100 memory locations** (`00`–`99`)
-
-Each word in memory is a signed four-digit decimal number (example: `+1234`, `-5678`).  
-Programs are written in BasicML and must be loaded into memory starting at location `00` before execution.
+UVSim is a program that lets you run and watch simple programs written in a very basic computer language. It helps you see step by step how a tiny "toy computer" works by showing what happens inside as the program runs.
 
 ---
 
@@ -22,14 +13,46 @@ Programs are written in BasicML and must be loaded into memory starting at locat
 
 ## 🚀 How to Run
 1. Open a terminal and navigate to the project folder.  
-2. Run the simulator:  
+2. Run the simulator by typing:  
    ```bash
    python main.py
-3. Type in the file path (Example: test_files/Test6.txt) and watch the program run!
+   ```  
+3. ON MAC: When opened, click "File" at left side of your menu bar near the Apple logo, then click "Open". Find the program you want to run (for example: `Test6.txt`) and click "Open".  
+   ON WINDOWS When opened, click "File" at the top left corder of the application, then click "Open". Find the program you want to run (for example: `Test6.txt`) and click "Open".
+   Please note that if you select an invalid file then it will tell you in the Output/Log box.
+4. Press the "Run" button to run the program with the file that you selected. As the program runs, you will see messages in the terminal showing what the simulator is doing. Sometimes, the program may ask you to type in numbers as input. Just follow the prompts and enter the numbers one at a time.  
 
 ---
 
-## 🖥 Instruction Set
+## 💡 What You'll See
+While the program is running, you will see messages that tell you what the simulator is doing, such as loading instructions, reading input, or displaying output. You might also see updates showing the contents of memory or the current value inside the "accumulator" (a special place where calculations happen). This is normal and helps you understand how the program works step by step.
+
+Example output might look like this:  
+```
+Enter an integer: 123
+Stored 123 at memory location 10
+Accumulator updated to +0123
+Program halted successfully.
+```
+
+---
+
+## 📥 Input Instructions
+Sometimes the program will ask you to enter numbers. When this happens:  
+- Type a plain number (positive or negative) and press Enter.  
+- Enter one number at a time as requested.  
+- For example, if asked for input, you might type:  
+  ```
+  25
+  -10
+  0
+  ```  
+- Just follow the prompts and enter the numbers as they appear in your program instructions.
+
+---
+
+## 🖥 Instruction Set (Reference)
+This section is mainly for reference. You don’t need to understand this table to use the program.
 
 | Code | Mnemonic    | Description |
 |------|-------------|-------------|
