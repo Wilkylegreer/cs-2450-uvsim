@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
 import sys
-from io_handler import get_file
 
 class UvsimGUI:
     def __init__(self, root):
@@ -12,7 +11,7 @@ class UvsimGUI:
 
         self.create_widgets()
 
-    def reset(self):
+    def reset(self):       
         self.cpu.reset()
         self.memory.reset()
         self.load_file()
@@ -52,17 +51,18 @@ class UvsimGUI:
         left_frame = ttk.Frame(main_frame)
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
+        lower_frame = ttk.Frame(main_frame)
+        lower_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=(0, 10))
+
         # Program controls
         controls_frame = ttk.LabelFrame(left_frame, text="Program Controls", padding=(10, 10))
         controls_frame.pack(fill=tk.X, pady=(0, 10))
 
-        btn_load = ttk.Button(controls_frame, text="Load Program", command=lambda: None)
         btn_run = ttk.Button(controls_frame, text="Run", command=lambda: self.cpu.run()) # Starts the program from the beginning of the input file.
         btn_step = ttk.Button(controls_frame, text="Step", command=lambda: None) # Steps through the program
         btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: self.reset()) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
         btn_exit = ttk.Button(controls_frame, text="Exit", command=sys.exit) # Closes the window and stops the program
 
-        btn_load.grid(row=0, column=0, padx=5, pady=5)
         btn_run.grid(row=0, column=1, padx=5, pady=5)
         btn_step.grid(row=0, column=2, padx=5, pady=5)
         btn_reset.grid(row=0, column=3, padx=5, pady=5)
@@ -78,6 +78,12 @@ class UvsimGUI:
         right_frame = ttk.LabelFrame(main_frame, text="Memory / Registers", padding=(10, 10))
         right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=False)
 
+        # Text input box
+        text_input_frame = ttk.LabelFrame(left_frame, text="Input Text Here:", padding=(10, 10))
+        text_input_frame.pack(fill=tk.BOTH, expand=True)
+        self.input_entry = tk.Text(text_input_frame, height=1, wrap=tk.WORD, state=tk.NORMAL)
+        self.input_entry.pack(fill=tk.BOTH, expand=True)
+
         columns = ("Address", "Value")
         self.memory_tree = ttk.Treeview(right_frame, columns=columns, show="headings", height=25)
         for col in columns:
@@ -87,6 +93,11 @@ class UvsimGUI:
         # Placeholder: Insert sample data
         for i in range(10):
             self.memory_tree.insert("", tk.END, values=(f"{i:03}", "0000"))
+
+        submit_frame = ttk.Frame(self.root)
+        submit_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10, padx=10)
+        btn_submit = ttk.Button(submit_frame, text="Submit", command=sys.exit)
+        btn_submit.pack(side=tk.LEFT)
 
     def open_file(self):
         filepath = filedialog.askopenfilename(
