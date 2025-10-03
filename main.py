@@ -2,7 +2,7 @@ import tkinter as tk
 from gui import UvsimGUI
 
 def main():
-    #GUI Setup
+    #GUI Setup 
     root = tk.Tk()
     app = UvsimGUI(root)
     root.mainloop()

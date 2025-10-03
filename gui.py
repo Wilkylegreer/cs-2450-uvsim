@@ -18,6 +18,11 @@ class UvsimGUI:
         self.load_file()
         self.log_message("Program reset.")
 
+    def submit_input(self):
+        user_input = self.input_entry.get()
+        # validate user_input
+        self.log_message(f"User Entered: {user_input}")
+
     def load_file(self):
         try:
             loaded = self.loader.load_from_file(self.selected_file)
