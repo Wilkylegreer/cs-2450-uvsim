@@ -40,7 +40,8 @@ class CPU:
 
     def run(self):
         while not self.done:
-            sleep(1)
+            sleep(.5)
+            self.gui.load_mem()
             instruction = self.fetch()
             self.decode_execute(instruction)
             if self.programCounter > 99:

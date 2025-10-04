@@ -7,7 +7,7 @@ def main():
     app = UvsimGUI(root)
     root.mainloop()
 
-    # # Initializations
+    # Initializations
     # memory = Memory()
     # cpu = CPU(memory)
 

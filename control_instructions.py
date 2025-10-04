@@ -6,16 +6,13 @@ class ControlInstructions:
         self.cpu = cpu
         self.gui = gui
 
+        self.temp_address = None
+
     # READ instruction
     def READ(self, address):
-        while True:
-            word = self.gui.input_entry.get()
-            if word.lstrip("+-").isdigit() and len(word.lstrip("+-")) <= 4:
-                self.memory.set_value(address, int(word))
-                break
-            else:
-                self.gui.log_message("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
-        
+        if self.temp_address != None:
+            self.memory.set_value(address, int(self.gui.input_entry.get("1.0", "end-1c")))
+            self.temp_address = None
 
     # WRITE instruction
     def WRITE(self, address):
@@ -75,9 +72,11 @@ class ControlInstructions:
 
         if not operation:
             raise ValueError(f"Unknown control operation: {opcode}")
-        
+
         if operation == "READ":
-            self.READ(memoryLoc)
+            self.temp_address = memoryLoc
+            self.gui.log_message("Submit a 4-digit number...")
+            self.cpu.done = True
         elif operation == "WRITE":
             self.WRITE(memoryLoc)
         elif operation == "LOAD":

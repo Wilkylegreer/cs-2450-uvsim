@@ -15,23 +15,74 @@ class UvsimGUI:
     def reset(self):       
         self.cpu.reset()
         self.memory.reset()
+        self.output_text.configure(state=tk.NORMAL)
+        self.output_text.delete("1.0", tk.END)
+        self.output_text.configure(state=tk.DISABLED)
+        self.log_message("---PROGRAM RESET---")
         self.load_file()
-        self.log_message("Program reset.")
 
     def submit_input(self):
-        user_input = self.input_entry.get()
-        self.log_message(f"User Entered: {user_input}")
+        content = self.input_entry.get("1.0", tk.END).strip()
+        if content.lstrip("+-").isdigit() and len(content.lstrip("+-")) <= 4:
+            self.conInstruct.READ(self.conInstruct.temp_address)
+            self.log_message(f"Submitted input: {content}")
+            self.cpu.done = False
+            self.load_mem()
+            self.cpu.run()
+        else:
+            self.log_message("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
+        self.input_entry.delete("1.0", tk.END)
+        self.btn_submit.configure(state=tk.DISABLED, style="Disabled.TButton")
 
     def load_file(self):
         try:
             loaded = self.loader.load_from_file(self.selected_file)
             if loaded:
                 self.log_message("Program loaded successfully.")
-                self.log_message(str(self.memory))
+                self.load_mem()
             else:
                 self.log_message("Error: Invalid program file.")
         except Exception as e:
             self.log_message(f"Error loading file: {e}")
+
+    def load_mem(self):
+        for item in self.memory_tree.get_children():
+            self.memory_tree.delete(item)
+        for index, i in enumerate(self.memory.mem):
+            if i != 0:
+                self.memory_tree.insert("", tk.END, values=(f"{index:02}", f"{i}"))
+
+    def open_file(self):
+        filepath = filedialog.askopenfilename(
+            title="Open Program File",
+            filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+        )
+        if filepath:
+            self.selected_file = filepath
+            self.log_message(f"Opened file: {filepath}")
+            # Simple program loading
+            from memory import Memory
+            from cpu import CPU
+            from control_instructions import ControlInstructions
+            from math_instructions import MathInstructions
+            from program_loader import ProgramLoader
+            if self.selected_file and self.selected_file.lower().endswith(".txt"):
+                self.btn_run.configure(state=tk.NORMAL, style="Enabled.TButton")
+                # self.btn_step.configure(state=tk.NORMAL, style="Enabled.TButton")
+                self.btn_reset.configure(state=tk.NORMAL, style="Enabled.TButton")
+            # else:
+            #     self.log_message("Invalid file type. Please select a .txt file.")
+            #     return
+
+            self.memory = Memory()
+            self.cpu = CPU(self.memory, self)
+            self.conInstruct = ControlInstructions(self.memory, self.cpu, self)
+            self.mathInstruct = MathInstructions(self.memory)
+            self.cpu.set_instructions(self.conInstruct, self.mathInstruct)
+            self.loader = ProgramLoader(self.memory, self)
+
+            self.load_file()
+            self.load_mem()
 
 
     def create_widgets(self):
@@ -70,12 +121,12 @@ class UvsimGUI:
         controls_frame.pack(fill=tk.X, pady=(0, 10))
 
         self.btn_run = ttk.Button(controls_frame, text="Run", command=lambda: self.cpu.run(), style="Disabled.TButton", state=tk.DISABLED) # Starts the program from the beginning of the input file.
-        self.btn_step = ttk.Button(controls_frame, text="Step", command=lambda: None, style="Disabled.TButton", state=tk.DISABLED) # Steps through the program
+        # self.btn_step = ttk.Button(controls_frame, text="Step", command=lambda: None, style="Disabled.TButton", state=tk.DISABLED) # Steps through the program
         self.btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: self.reset(), style="Disabled.TButton", state=tk.DISABLED) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
         self.btn_exit = ttk.Button(controls_frame, text="Exit", command=sys.exit) # Closes the window and stops the program
 
         self.btn_run.grid(row=0, column=1, padx=5, pady=5)
-        self.btn_step.grid(row=0, column=2, padx=5, pady=5)
+        # self.btn_step.grid(row=0, column=2, padx=5, pady=5)
         self.btn_reset.grid(row=0, column=3, padx=5, pady=5)
         self.btn_exit.grid(row=0, column=4, padx=5, pady=5)
         
@@ -103,10 +154,6 @@ class UvsimGUI:
             self.memory_tree.column(col, width=80, anchor=tk.CENTER)
         self.memory_tree.pack(fill=tk.BOTH, expand=True)
 
-        # Placeholder: Insert sample data
-        # for i in range(10):
-        #     self.memory_tree.insert("", tk.END, values=(f"{i:03}", "0000"))
-
         submit_frame = ttk.Frame(self.root)
         submit_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10, padx=10)
         self.btn_submit = ttk.Button(submit_frame, text="Submit", command=self.submit_input, state=tk.DISABLED, style="Disabled.TButton")
@@ -122,44 +169,6 @@ class UvsimGUI:
             self.btn_submit.configure(state=tk.DISABLED, style="Disabled.TButton")
         else:
             self.btn_submit.configure(state=tk.NORMAL, style="Enabled.TButton")
-
-    def submit_input(self):
-        content = self.input_entry.get("1.0", tk.END).strip()
-        if content:
-            self.log_message(f"Submitted input: {content}") # Sends the inputed text to the log
-        self.input_entry.delete("1.0", tk.END) # Deletes what is in the text box
-        self.btn_submit.configure(state=tk.DISABLED, style="Disabled.TButton") # Disables the submit button
-
-    def open_file(self):
-        filepath = filedialog.askopenfilename(
-            title="Open Program File",
-            filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
-        )
-        if filepath:
-            self.selected_file = filepath
-            self.log_message(f"Opened file: {filepath}")
-            # Simple program loading
-            from memory import Memory
-            from cpu import CPU
-            from control_instructions import ControlInstructions
-            from math_instructions import MathInstructions
-            from program_loader import ProgramLoader
-            if self.selected_file and self.selected_file.lower().endswith(".txt"):
-                self.btn_run.configure(state=tk.NORMAL, style="Enabled.TButton")
-                self.btn_step.configure(state=tk.NORMAL, style="Enabled.TButton")
-                self.btn_reset.configure(state=tk.NORMAL, style="Enabled.TButton")
-            # else:
-            #     self.log_message("Invalid file type. Please select a .txt file.")
-            #     return
-
-            self.memory = Memory()
-            self.cpu = CPU(self.memory, self)
-            conInstruct = ControlInstructions(self.memory, self.cpu, self)
-            mathInstruct = MathInstructions(self.memory)
-            self.cpu.set_instructions(conInstruct, mathInstruct)
-            self.loader = ProgramLoader(self.memory, self)
-            
-            self.load_file()
 
     def log_message(self, message: str):
         self.output_text.configure(state=tk.NORMAL)

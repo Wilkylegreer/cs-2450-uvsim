@@ -20,4 +20,9 @@ class Memory:
         return self.mem[address]
     
     def set_value(self, address, value):
-        self.mem[address] = value
+        if int(value) > 0:
+            self.mem[address] = "+" + str(value).strip("+")
+        elif int(value) == 0:
+            self.mem[address] = "+0000"
+        else:
+            self.mem[address] = value
