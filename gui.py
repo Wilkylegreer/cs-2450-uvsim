@@ -67,9 +67,9 @@ class UvsimGUI:
             from math_instructions import MathInstructions
             from program_loader import ProgramLoader
             if self.selected_file and self.selected_file.lower().endswith(".txt"):
-                self.btn_run.configure(state=tk.NORMAL, style="Enabled.TButton")
+                self.btn_run.configure(state=tk.NORMAL)
                 # self.btn_step.configure(state=tk.NORMAL, style="Enabled.TButton")
-                self.btn_reset.configure(state=tk.NORMAL, style="Enabled.TButton")
+                self.btn_reset.configure(state=tk.NORMAL)
             # else:
             #     self.log_message("Invalid file type. Please select a .txt file.")
             #     return
@@ -120,9 +120,9 @@ class UvsimGUI:
         controls_frame = ttk.LabelFrame(left_frame, text="Program Controls", padding=(10, 10))
         controls_frame.pack(fill=tk.X, pady=(0, 10))
 
-        self.btn_run = ttk.Button(controls_frame, text="Run", command=lambda: self.cpu.run(), style="Disabled.TButton", state=tk.DISABLED) # Starts the program from the beginning of the input file.
+        self.btn_run = ttk.Button(controls_frame, text="Run", command=lambda: self.cpu.run(), state=tk.DISABLED) # Starts the program from the beginning of the input file.
         # self.btn_step = ttk.Button(controls_frame, text="Step", command=lambda: None, style="Disabled.TButton", state=tk.DISABLED) # Steps through the program
-        self.btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: self.reset(), style="Disabled.TButton", state=tk.DISABLED) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
+        self.btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: self.reset(), state=tk.DISABLED) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
         self.btn_exit = ttk.Button(controls_frame, text="Exit", command=sys.exit) # Closes the window and stops the program
 
         self.btn_run.grid(row=0, column=1, padx=5, pady=5)
@@ -156,7 +156,7 @@ class UvsimGUI:
 
         submit_frame = ttk.Frame(self.root)
         submit_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10, padx=10)
-        self.btn_submit = ttk.Button(submit_frame, text="Submit", command=self.submit_input, state=tk.DISABLED, style="Disabled.TButton")
+        self.btn_submit = ttk.Button(submit_frame, text="Submit", command=self.submit_input, state=tk.DISABLED)
         self.btn_submit.pack(side=tk.LEFT)
 
         # Bind input changes to enable/disable submit button
@@ -166,9 +166,11 @@ class UvsimGUI:
     def on_input_change(self, event=None):
         content = self.input_entry.get("1.0", tk.END).strip()
         if not content:
-            self.btn_submit.configure(state=tk.DISABLED, style="Disabled.TButton")
+            # , style="Disabled.TButton"
+            self.btn_submit.configure(state=tk.DISABLED)
         else:
-            self.btn_submit.configure(state=tk.NORMAL, style="Enabled.TButton")
+            # , style="Enabled.TButton"
+            self.btn_submit.configure(state=tk.NORMAL)
 
     def log_message(self, message: str):
         self.output_text.configure(state=tk.NORMAL)
