@@ -50,7 +50,7 @@ class UvsimGUI:
         else:
             self.log_message("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
         self.input_entry.delete("1.0", tk.END)
-        self.btn_submit.configure(state=tk.DISABLED, style="Disabled.TButton")
+        self.btn_submit.configure(state=tk.DISABLED)
 
     def load_file(self):
         try:
