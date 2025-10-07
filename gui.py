@@ -3,12 +3,12 @@ from tkinter import ttk, filedialog
 import sys
 
 class UvsimGUI:
-    isfile = 0
     def __init__(self, root):
         self.root = root
         self.root.title("UVSim Simulator")
         self.root.geometry("900x600")
         self.root.configure(padx=10, pady=10)
+        self.current_entry = None
 
         self.create_widgets()
 
@@ -20,6 +20,21 @@ class UvsimGUI:
         self.output_text.configure(state=tk.DISABLED)
         self.log_message("---PROGRAM RESET---")
         self.load_file()
+
+    def check_run(self):
+        can_run = False
+        for x in self.memory.mem:
+            if len(str(x).lstrip("+-")) < 4 or not str(x).lstrip("+-").isdigit():
+                if x == 0:
+                    can_run = True
+                    break
+                can_run = False
+                self.log_message(f"{x} : One or more errors in memory. Fix before running.")
+                break
+            else:
+                can_run = True
+        if can_run:
+            self.cpu.run()
 
     def submit_input(self):
         content = self.input_entry.get("1.0", tk.END).strip()
@@ -38,12 +53,52 @@ class UvsimGUI:
         try:
             loaded = self.loader.load_from_file(self.selected_file)
             if loaded:
-                self.log_message("Program loaded successfully.")
                 self.load_mem()
-            else:
-                self.log_message("Error: Invalid program file.")
         except Exception as e:
             self.log_message(f"Error loading file: {e}")
+
+    def edit_memory_cell(self, event):
+        if hasattr(self, "current_entry") and self.current_entry is not None:
+            self.current_entry.destroy()
+            self.current_entry = None
+
+        selected_item = self.memory_tree.identify_row(event.y)
+        selected_column = self.memory_tree.identify_column(event.x)
+
+        if selected_item and selected_column == "#2":
+            x, y, width, height = self.memory_tree.bbox(selected_item, selected_column)
+            old_value = self.memory_tree.item(selected_item, "values")[1]
+
+            # Create an entry widget over the cell
+            entry = ttk.Entry(self.memory_tree)
+            entry.place(x = x, y = y - 2, width = width + 4, height = height + 4)
+            entry.insert(0, old_value)
+            entry.focus()
+            entry.selection_range(0, tk.END)
+
+            self.current_entry = entry
+
+            def save_edit(event=None):
+                new_value = entry.get().strip()
+                try:
+                    # Basic validation: must be signed integer up to 4 digits
+                    if new_value.lstrip("+-").isdigit() and len(new_value.lstrip("+-")) <= 4:
+                        # Update tree
+                        address = int(self.memory_tree.item(selected_item, "values")[0])
+                        self.memory_tree.item(selected_item, values=(f"{address:02}", new_value))
+                        # Update actual memory
+                        self.memory.set_value(address, new_value)
+                        self.log_message(f"Memory[{address}] updated to {new_value}")
+                    else:
+                        self.log_message("Invalid input. Must be a signed 4-digit number.")
+                except Exception as e:
+                    self.log_message(f"Error updating memory: {e}")
+                finally:
+                    entry.destroy()
+                    self.current_entry = None
+
+            entry.bind("<Return>", save_edit)
+            entry.bind("<FocusOut>", lambda e: (entry.destroy(), setattr(self, "current_entry", None)))
 
     def load_mem(self):
         for item in self.memory_tree.get_children():
@@ -120,7 +175,7 @@ class UvsimGUI:
         controls_frame = ttk.LabelFrame(left_frame, text="Program Controls", padding=(10, 10))
         controls_frame.pack(fill=tk.X, pady=(0, 10))
 
-        self.btn_run = ttk.Button(controls_frame, text="Run", command=lambda: self.cpu.run(), state=tk.DISABLED) # Starts the program from the beginning of the input file.
+        self.btn_run = ttk.Button(controls_frame, text="Run", command=lambda: self.check_run(), state=tk.DISABLED) # Starts the program from the beginning of the input file.
         # self.btn_step = ttk.Button(controls_frame, text="Step", command=lambda: None, style="Disabled.TButton", state=tk.DISABLED) # Steps through the program
         self.btn_reset = ttk.Button(controls_frame, text="Reset", command=lambda: self.reset(), state=tk.DISABLED) # Could reset the accumulator to its default value and reset the pointer looking at the input file to run through the program from the beginning of the file.
         self.btn_exit = ttk.Button(controls_frame, text="Exit", command=sys.exit) # Closes the window and stops the program
@@ -147,8 +202,13 @@ class UvsimGUI:
         self.input_entry = tk.Text(text_input_frame, height=1, wrap=tk.WORD, state=tk.NORMAL)
         self.input_entry.pack(fill=tk.BOTH, expand=True)
 
+        # Memory Tree
         columns = ("Address", "Value")
         self.memory_tree = ttk.Treeview(right_frame, columns=columns, show="headings", height=25)
+
+        style = ttk.Style()
+        style.configure("Treeview", rowheight=20)
+
         for col in columns:
             self.memory_tree.heading(col, text=col)
             self.memory_tree.column(col, width=80, anchor=tk.CENTER)
@@ -159,8 +219,9 @@ class UvsimGUI:
         self.btn_submit = ttk.Button(submit_frame, text="Submit", command=self.submit_input, state=tk.DISABLED)
         self.btn_submit.pack(side=tk.LEFT)
 
-        # Bind input changes to enable/disable submit button
+        # Bindings
         self.input_entry.bind("<KeyRelease>", self.on_input_change)
+        self.memory_tree.bind("<Double-1>", self.edit_memory_cell)
 
 
     def on_input_change(self, event=None):

@@ -33,7 +33,10 @@ class ProgramLoader:
             if self.lineValidation(allLines):
                 for index, x in enumerate(allLines):
                     self.memory.set_value(index, x)
+                self.gui.log_message("Program loaded without errors.")
                 return True
-                isfile = 1
             else:
-                return False
+                for index, x in enumerate(allLines):
+                    self.memory.set_value(index, x)
+                self.gui.log_message("Program loaded with invalid syntax.")
+                return True
