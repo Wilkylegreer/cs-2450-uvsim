@@ -36,14 +36,17 @@ class UvsimGUI:
         if can_run:
             self.cpu.run()
 
+    def resume_cpu(self):
+        self.cpu.done = False
+        self.load_mem()
+        self.cpu.run()
+
     def submit_input(self):
         content = self.input_entry.get("1.0", tk.END).strip()
         if content.lstrip("+-").isdigit() and len(content.lstrip("+-")) <= 4:
             self.conInstruct.READ(self.conInstruct.temp_address)
             self.log_message(f"Submitted input: {content}")
-            self.cpu.done = False
-            self.load_mem()
-            self.cpu.run()
+            self.resume_cpu()
         else:
             self.log_message("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
         self.input_entry.delete("1.0", tk.END)
@@ -221,17 +224,23 @@ class UvsimGUI:
 
         # Bindings
         self.input_entry.bind("<KeyRelease>", self.on_input_change)
+        self.input_entry.bind("<<Modified>>", self.on_input_change)
+        self.input_entry.bind("<FocusIn>", self.on_input_change)
+        self.input_entry.bind("<FocusOut>", self.on_input_change)
         self.memory_tree.bind("<Double-1>", self.edit_memory_cell)
 
 
     def on_input_change(self, event=None):
         content = self.input_entry.get("1.0", tk.END).strip()
-        if not content:
-            # , style="Disabled.TButton"
-            self.btn_submit.configure(state=tk.DISABLED)
-        else:
-            # , style="Enabled.TButton"
+
+        if content:
             self.btn_submit.configure(state=tk.NORMAL)
+        else:
+            self.btn_submit.configure(state=tk.DISABLED)
+
+        # Reset the modified flag so the <<Modified>> event keeps firing
+        if event and hasattr(self.input_entry, "edit_modified"):
+            self.input_entry.edit_modified(False)
 
     def log_message(self, message: str):
         self.output_text.configure(state=tk.NORMAL)

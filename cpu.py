@@ -39,10 +39,14 @@ class CPU:
             self.gui.log_message(f"Skipping 'word' - CPU")
 
     def run(self):
-        while not self.done:
-            sleep(.5)
-            self.gui.load_mem()
-            instruction = self.fetch()
-            self.decode_execute(instruction)
-            if self.programCounter > 99:
-                self.controlInstruct.HALT()
+        if self.done:
+            return
+
+        self.gui.load_mem()
+        instruction = self.fetch()
+        self.decode_execute(instruction)
+        if self.programCounter > 99:
+            self.controlInstruct.HALT()
+            return
+
+        self.gui.root.after(500, self.run)
