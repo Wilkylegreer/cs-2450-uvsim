@@ -103,6 +103,34 @@ class UvsimGUI:
             entry.bind("<Return>", save_edit)
             entry.bind("<FocusOut>", lambda e: (entry.destroy(), setattr(self, "current_entry", None)))
 
+    def add_memory_cell(self):
+        selected_item = self.memory_tree.selection()
+        if selected_item:
+            selected_item = selected_item[0]
+            address = int(self.memory_tree.item(selected_item, "values")[0])
+            # Insert new memory cell after the selected address
+            insert_index = address + 1
+            self.memory.mem.insert(insert_index, "+0000")
+            self.memory.mem.pop()
+            # Clear and reload tree to update addresses
+            self.load_mem()
+            self.log_message(f"Added new memory cell at address {insert_index}")
+        else:
+            new_index = self.memory.add_value("+0000")
+            self.memory_tree.insert("", tk.END, values=(f"{new_index:02}", "+0000"))
+            self.log_message(f"Added new memory cell at address {new_index}")
+
+    def remove_memory_cell(self):
+        selected_item = self.memory_tree.selection()
+        if not selected_item:
+            self.log_message("No memory cell selected to remove.")
+            return
+        address = int(self.memory_tree.item(selected_item, "values")[0])
+        self.memory_tree.delete(selected_item)
+        if address < len(self.memory.mem):
+            self.memory.mem[address] = 0
+        self.log_message(f"Removed memory cell at address {address}")
+
     def load_mem(self):
         for item in self.memory_tree.get_children():
             self.memory_tree.delete(item)
@@ -216,6 +244,16 @@ class UvsimGUI:
             self.memory_tree.heading(col, text=col)
             self.memory_tree.column(col, width=80, anchor=tk.CENTER)
         self.memory_tree.pack(fill=tk.BOTH, expand=True)
+
+        # Add "+" and "–" buttons below memory tree
+        mem_button_frame = ttk.Frame(right_frame)
+        mem_button_frame.pack(fill=tk.X, pady=(5, 0))
+
+        btn_add = ttk.Button(mem_button_frame, text="+", width=3, command=self.add_memory_cell)
+        btn_add.pack(side=tk.LEFT, padx=5)
+
+        btn_remove = ttk.Button(mem_button_frame, text="–", width=3, command=self.remove_memory_cell)
+        btn_remove.pack(side=tk.LEFT)
 
         submit_frame = ttk.Frame(self.root)
         submit_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10, padx=10)

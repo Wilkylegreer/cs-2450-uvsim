@@ -29,3 +29,9 @@ class Memory:
                 self.mem[address] = value
         except:
             self.mem[address] = value
+
+    def add_value(self, value):
+        for index, x in enumerate(self.mem):
+            if x == 0:
+                self.mem[index] = value
+                return index
