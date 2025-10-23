@@ -181,7 +181,8 @@ class UvsimGUI:
         menubar = tk.Menu(self.root)
         file_menu = tk.Menu(menubar, tearoff=0)
         file_menu.add_command(label="Open", command=self.open_file)
-        file_menu.add_command(label="Save", command=lambda: None)
+        file_menu.add_command(label="Save", command=self.save_file)
+        file_menu.add_command(label="Save As", command=self.save_file_as)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
         menubar.add_cascade(label="File", menu=file_menu)
@@ -285,6 +286,49 @@ class UvsimGUI:
         self.output_text.insert(tk.END, message + "\n")
         self.output_text.see(tk.END)                  # auto scroller :)
         self.output_text.configure(state=tk.DISABLED)
+
+    def save_file(self):
+        try:
+            # If no file loaded yet, ask user for one
+            if not hasattr(self, "selected_file") or not self.selected_file:
+                return self.save_file_as()
+
+            # Convert memory contents into plain text lines
+            content = "\n".join(str(x) for x in self.memory.mem)
+
+            with open(self.selected_file, "w", encoding="utf-8") as f:
+                f.write(content)
+
+            self.log_message(f"Saved file: {self.selected_file}")
+            messagebox.showinfo("Saved", f"File saved:\n{self.selected_file}")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not save file:\n{e}")
+            self.log_message(f"Save error: {e}")
+
+    def save_file_as(self):
+        try:
+            file_path = filedialog.asksaveasfilename(
+                title="Save Program As",
+                defaultextension=".txt",
+                filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+            )
+            if not file_path:
+                self.log_message("Save As cancelled.")
+                return
+
+            content = "\n".join(str(x) for x in self.memory.mem)
+
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+            self.selected_file = file_path  # update path for future saves
+            self.log_message(f"Saved file as: {file_path}")
+            messagebox.showinfo("Saved", f"File saved:\n{file_path}")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not save file:\n{e}")
+            self.log_message(f"Save As error: {e}")
 
 
 # def main():
