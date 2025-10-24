@@ -6,11 +6,25 @@ from control_instructions import ControlInstructions
 from math_instructions import MathInstructions
 from memory import Memory
 
+class FakeRoot:
+    def after(self, delay, func):
+        pass
+        
+class FakeGUI:
+    def __init__(self):
+        self.root = FakeRoot()
+
+    def log_message(self, msg):
+        pass
+
+    def load_mem(self):
+        pass
+        
 @pytest.fixture
 def setup_uvsim(monkeypatch):
     memory = Memory()
-    cpu = CPU(memory)
-    control = ControlInstructions(memory, cpu)
+    cpu = CPU(memory, gui)
+    control = ControlInstructions(memory, cpu, gui)
     math_inst = MathInstructions(memory)
     cpu.set_instructions(control, math_inst)
     return cpu, control, math_inst, memory
@@ -18,7 +32,7 @@ def setup_uvsim(monkeypatch):
 def test_memory_read_write(setup_uvsim):
     _, _, _, memory = setup_uvsim
     memory.set_value(10, 1234)
-    assert memory.get_value(10) == 1234
+    assert memory.get_value(10) == "+1234"
 
 def test_memory_reset(setup_uvsim):
     _, _, _, memory = setup_uvsim
@@ -58,13 +72,13 @@ def test_load_instruction(setup_uvsim):
     cpu, control, _, memory = setup_uvsim
     memory.set_value(9, 55)
     control.LOAD(9)
-    assert cpu.accumulator == 55
+    assert cpu.accumulator == "+55"
 
 def test_store_instruction(setup_uvsim):
     cpu, control, _, memory = setup_uvsim
     cpu.accumulator = 77
     control.STORE(10)
-    assert memory.get_value(10) == 77
+    assert memory.get_value(10) == "+77"
 
 def test_branch_instruction(setup_uvsim):
     cpu, control, _, memory = setup_uvsim
