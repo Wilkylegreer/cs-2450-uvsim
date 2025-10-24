@@ -23,6 +23,7 @@ class FakeGUI:
 @pytest.fixture
 def setup_uvsim(monkeypatch):
     memory = Memory()
+    gui = FakeGUI()
     cpu = CPU(memory, gui)
     control = ControlInstructions(memory, cpu, gui)
     math_inst = MathInstructions(memory)
