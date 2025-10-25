@@ -11,6 +11,7 @@ class UvsimGUI:
         self.current_entry = None
 
         self.create_widgets()
+        self.change_theme("default mode")
 
     def reset(self):       
         self.cpu.reset()
@@ -170,8 +171,115 @@ class UvsimGUI:
             self.load_file()
             self.load_mem()
 
+    
+
+    def open_theme_menu(self, event=None):
+        # Popup position (under the mouse)
+        x = self.root.winfo_pointerx()
+        y = self.root.winfo_pointery()
+
+        # Display the popup menu
+        self.theme_menu.tk_popup(x, y)
+        self.theme_menu.grab_release()
+
+    def change_theme(self, theme="default"):
+        theme_key = theme.lower()
+        if theme_key not in self.themes:
+            print(f"Theme '{theme}' not found. Using Default Mode.")
+            theme_key = "default mode"
+        colors = self.themes[theme_key]
+
+        # Configure root background
+        self.root.configure(bg=colors['bg'])
+
+        style = ttk.Style()
+        style.theme_use('default')
+
+        # Configure ttk styles
+        style.configure("TLabel", background=colors['bg'], foreground=colors['fg'])
+        style.configure("TButton", background=colors['button_bg'], foreground=colors['button_fg'])
+        style.map("TButton",
+                  foreground=[('active', colors['button_fg'])],
+                  background=[('active', colors['button_bg'])])
+        style.configure("Treeview",
+                        background=colors['text_bg'],
+                        foreground=colors['text_fg'],
+                        fieldbackground=colors['text_bg'])
+        style.map("Treeview", background=[('selected', colors['button_bg'])], foreground=[('selected', colors['button_fg'])])
+
+        # Configure Text widgets
+        self.output_text.configure(background=colors['text_bg'], foreground=colors['text_fg'], insertbackground=colors['text_fg'])
+        self.input_entry.configure(background=colors['text_bg'], foreground=colors['text_fg'], insertbackground=colors['text_fg'])
+
+        # Apply recursively to all widgets
+        self.apply_widget_theme(self.root, colors)
+
+    def apply_widget_theme(self, widget, colors):
+        # Apply colors based on widget type
+        cls = widget.__class__.__name__
+        if cls in ['Label', 'LabelFrame']:
+            try:
+                widget.configure(background=colors['bg'], foreground=colors['fg'])
+            except:
+                pass
+        elif cls == 'Button':
+            try:
+                widget.configure(background=colors['button_bg'], foreground=colors['button_fg'], activebackground=colors['button_bg'])
+            except:
+                pass
+        elif cls == 'Text':
+            try:
+                widget.configure(background=colors['text_bg'], foreground=colors['text_fg'], insertbackground=colors['text_fg'])
+            except:
+                pass
+        elif cls == 'Frame':
+            try:
+                widget.configure(background=colors['bg'])
+            except:
+                pass
+        elif cls == 'TFrame':
+            try:
+                widget.configure(style="TFrame")
+            except:
+                pass
+        # Recurse for children
+        for child in widget.winfo_children():
+            self.apply_widget_theme(child, colors)
 
     def create_widgets(self):
+        # The Dictionary of Themes
+        self.themes = {
+            "default mode": {
+                "bg": "#4C721D",          # Dark Green background
+                "fg": "#FFFFFF",          # White text
+                "text_bg": "#FFFFFF",     # White text background
+                "text_fg": "#000000",     # Black text
+                "button_bg": "#4C721D",   # Dark Green button background
+                "button_fg": "#FFFFFF"    # White button text
+            },
+            "dark mode": {
+                "bg": "#121212",          # Very dark gray background
+                "fg": "#E0E0E0",          # Light gray text
+                "text_bg": "#1E1E1E",     # Dark gray text background
+                "text_fg": "#FFFFFF",     # White text
+                "button_bg": "#333333",   # Dark gray button background
+                "button_fg": "#FFFFFF"    # White button text
+            },
+            "light mode": {
+                "bg": "#F0F0F0",          # Light gray background
+                "fg": "#000000",          # Black text
+                "text_bg": "#FFFFFF",     # White text background
+                "text_fg": "#000000",     # Black text
+                "button_bg": "#E0E0E0",   # Light gray button background
+                "button_fg": "#000000"    # Black button text
+            }
+        }
+
+        # Themes
+        self.theme_menu = tk.Menu(self.root, tearoff=0)
+        self.theme_menu.add_command(label="Default Mode", command=lambda: self.change_theme("Default Mode")) #RGB (76,114,29) / Hex# 4C721D (Dark Green) & (White) RGB (255,255,255 / #FFFFFF)
+        self.theme_menu.add_command(label="Dark Mode", command=lambda: self.change_theme("Dark Mode"))
+        self.theme_menu.add_command(label="Light Mode", command=lambda: self.change_theme("Light Mode"))
         # Button colors
         style = ttk.Style()
         style.configure("Enabled.TButton", foreground="white")  # Enabled state
@@ -183,6 +291,8 @@ class UvsimGUI:
         file_menu.add_command(label="Open", command=self.open_file)
         file_menu.add_command(label="Save", command=self.save_file)
         file_menu.add_command(label="Save As", command=self.save_file_as)
+        file_menu.add_command(label="Save", command=lambda: None)
+        file_menu.add_command(label="Themes", command=self.open_theme_menu)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
         menubar.add_cascade(label="File", menu=file_menu)
