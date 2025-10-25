@@ -27,7 +27,7 @@ UVSim is a program that lets you run and watch simple programs written in a very
 
 ## 💾 File Saving
 You can now save your current program or memory state directly from the interface:  
-- Click **File → Save** to store the current state of your loaded or edited program.  
+- Click **File → Save (or save as)** to store the current state of your loaded or edited program.  
 - You’ll be prompted to choose a destination and filename for saving.  
 - Saved files can later be reopened with **File → Open**.
 
