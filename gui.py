@@ -291,7 +291,6 @@ class UvsimGUI:
         file_menu.add_command(label="Open", command=self.open_file)
         file_menu.add_command(label="Save", command=self.save_file)
         file_menu.add_command(label="Save As", command=self.save_file_as)
-        file_menu.add_command(label="Save", command=lambda: None)
         file_menu.add_command(label="Themes", command=self.open_theme_menu)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
