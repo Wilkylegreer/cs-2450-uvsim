@@ -6,7 +6,7 @@ class UvsimGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("UVSim Simulator")
-        self.root.geometry("900x600")
+        self.root.geometry("900x675")
         self.root.configure(padx=10, pady=10)
         self.current_entry = None
 
