@@ -42,7 +42,7 @@ UVSim now supports direct memory editing:
 ---
 
 ## 🎨 Custom Color Themes
-You can personalize UVSim’s appearance with system-wide custom colors:  
+You can personalize UVSim’s appearance with system-wide custom colors **(File → Themes)**:  
 - Change background, text, and highlight colors to fit your preferences.  
 - These color settings apply across the entire application for a consistent and accessible look.
 
