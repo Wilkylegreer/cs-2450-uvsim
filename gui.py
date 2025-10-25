@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, colorchooser
 import sys
 
 class UvsimGUI:
@@ -178,10 +178,46 @@ class UvsimGUI:
         x = self.root.winfo_pointerx()
         y = self.root.winfo_pointery()
 
-        # Display the popup menu
+ 
         self.theme_menu.tk_popup(x, y)
         self.theme_menu.grab_release()
 
+    def choose_custom_colors(self):
+        bg_color = colorchooser.askcolor(title="Choose Background Color")
+        if not bg_color or not bg_color[1]:
+            return  
+    
+        fg_color = colorchooser.askcolor(title="Choose Text (Foreground) Color")
+        if not fg_color or not fg_color[1]:
+            return  
+
+
+        self.themes["custom"] = {
+            "bg": bg_color[1],
+            "fg": fg_color[1],
+            "text_bg": bg_color[1],
+            "text_fg": fg_color[1],
+            "button_bg": fg_color[1],
+            "button_fg": bg_color[1],
+        }
+
+        self.change_theme("custom")
+        style = ttk.Style()
+        style.configure("TFrame", background=bg_color[1])
+        style.configure("TLabelFrame", background=bg_color[1], foreground=fg_color[1])
+        style.configure("TLabelFrame.Label", background=bg_color[1], foreground=fg_color[1])
+        style.configure("TButton", background=fg_color[1], foreground=bg_color[1])
+        style.map("TButton",
+                background=[("active", fg_color[1])],
+                foreground=[("active", bg_color[1])])
+        
+        style.configure("Treeview", 
+                        background=bg_color[1],
+                        fieldbackground=bg_color[1],
+                        foreground=fg_color[1])
+        style.configure("Treeview.Heading", background=fg_color[1], foreground=bg_color[1])
+    
+        
     def change_theme(self, theme="default"):
         theme_key = theme.lower()
         if theme_key not in self.themes:
@@ -189,29 +225,39 @@ class UvsimGUI:
             theme_key = "default mode"
         colors = self.themes[theme_key]
 
-        # Configure root background
         self.root.configure(bg=colors['bg'])
 
         style = ttk.Style()
         style.theme_use('default')
 
-        # Configure ttk styles
+        style.configure("TFrame", background=colors['bg'])
+        style.configure("TLabelFrame", background=colors['bg'], foreground=colors['fg'])
+        style.configure("TLabelFrame.Label", background=colors['bg'], foreground=colors['fg'])
         style.configure("TLabel", background=colors['bg'], foreground=colors['fg'])
+
         style.configure("TButton", background=colors['button_bg'], foreground=colors['button_fg'])
         style.map("TButton",
-                  foreground=[('active', colors['button_fg'])],
-                  background=[('active', colors['button_bg'])])
+              foreground=[('active', colors['button_fg'])],
+              background=[('active', colors['button_bg'])])
         style.configure("Treeview",
-                        background=colors['text_bg'],
-                        foreground=colors['text_fg'],
-                        fieldbackground=colors['text_bg'])
-        style.map("Treeview", background=[('selected', colors['button_bg'])], foreground=[('selected', colors['button_fg'])])
+                    background=colors['text_bg'],
+                    fieldbackground=colors['text_bg'],
+                    foreground=colors['text_fg'])
+        style.configure("Treeview.Heading",
+                        background=colors['button_bg'],
+                        foreground=colors['button_fg'])
 
-        # Configure Text widgets
-        self.output_text.configure(background=colors['text_bg'], foreground=colors['text_fg'], insertbackground=colors['text_fg'])
-        self.input_entry.configure(background=colors['text_bg'], foreground=colors['text_fg'], insertbackground=colors['text_fg'])
+        self.output_text.configure(
+            background=colors['text_bg'],
+            foreground=colors['text_fg'],
+            insertbackground=colors['text_fg']
+        )
+        self.input_entry.configure(
+            background=colors['text_bg'],
+            foreground=colors['text_fg'],
+            insertbackground=colors['text_fg']
+        )
 
-        # Apply recursively to all widgets
         self.apply_widget_theme(self.root, colors)
 
     def apply_widget_theme(self, widget, colors):
@@ -280,6 +326,8 @@ class UvsimGUI:
         self.theme_menu.add_command(label="Default Mode", command=lambda: self.change_theme("Default Mode")) #RGB (76,114,29) / Hex# 4C721D (Dark Green) & (White) RGB (255,255,255 / #FFFFFF)
         self.theme_menu.add_command(label="Dark Mode", command=lambda: self.change_theme("Dark Mode"))
         self.theme_menu.add_command(label="Light Mode", command=lambda: self.change_theme("Light Mode"))
+        self.theme_menu.add_separator()
+        self.theme_menu.add_command(label="Custom Theme...", command=self.choose_custom_colors)
         # Button colors
         style = ttk.Style()
         style.configure("Enabled.TButton", foreground="white")  # Enabled state
@@ -300,6 +348,8 @@ class UvsimGUI:
         help_menu.add_command(label="About", command=lambda: None)
         menubar.add_cascade(label="Help", menu=help_menu)
         self.root.config(menu=menubar)
+
+        
 
         # Main layout frames
         main_frame = ttk.Frame(self.root, padding=(5, 5, 5, 5))
@@ -440,12 +490,4 @@ class UvsimGUI:
             self.log_message(f"Save As error: {e}")
 
 
-# def main():
-#     root = tk.Tk()
-#     app = UvsimGUI(root)
-#     root.mainloop()
-    
 
-
-# if __name__ == "__main__":
-#     main()
