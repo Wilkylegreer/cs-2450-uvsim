@@ -24,7 +24,7 @@ class UvsimGUI:
     def check_run(self):
         can_run = False
         for x in self.memory.mem:
-            if len(str(x).lstrip("+-")) < 4 or not str(x).lstrip("+-").isdigit():
+            if len(str(x).lstrip("+-")) < 6 or not str(x).lstrip("+-").isdigit():
                 if x == 0:
                     can_run = True
                     break
@@ -43,12 +43,12 @@ class UvsimGUI:
 
     def submit_input(self):
         content = self.input_entry.get("1.0", tk.END).strip()
-        if content.lstrip("+-").isdigit() and len(content.lstrip("+-")) <= 4:
+        if content.lstrip("+-").isdigit() and len(content.lstrip("+-")) <= 6:
             self.conInstruct.READ(self.conInstruct.temp_address)
             self.log_message(f"Submitted input: {content}")
             self.resume_cpu()
         else:
-            self.log_message("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
+            self.log_message("Invalid input, must be a signed 6-digit number (e.g. +012034 or -005067). Try again.")
         self.input_entry.delete("1.0", tk.END)
         self.btn_submit.configure(state=tk.DISABLED)
 
@@ -85,7 +85,7 @@ class UvsimGUI:
                 new_value = entry.get().strip()
                 try:
                     # Basic validation: must be signed integer up to 4 digits
-                    if new_value.lstrip("+-").isdigit() and len(new_value.lstrip("+-")) <= 4:
+                    if new_value.lstrip("+-").isdigit() and len(new_value.lstrip("+-")) <= 6:
                         # Update tree
                         address = int(self.memory_tree.item(selected_item, "values")[0])
                         self.memory_tree.item(selected_item, values=(f"{address:02}", new_value))
@@ -93,7 +93,7 @@ class UvsimGUI:
                         self.memory.set_value(address, new_value)
                         self.log_message(f"Memory[{address}] updated to {new_value}")
                     else:
-                        self.log_message("Invalid input. Must be a signed 4-digit number.")
+                        self.log_message("Invalid input. Must be a signed 6-digit number.")
                 except Exception as e:
                     self.log_message(f"Error updating memory: {e}")
                 finally:
@@ -110,14 +110,14 @@ class UvsimGUI:
             address = int(self.memory_tree.item(selected_item, "values")[0])
             # Insert new memory cell after the selected address
             insert_index = address + 1
-            self.memory.mem.insert(insert_index, "+0000")
+            self.memory.mem.insert(insert_index, "+000000")
             self.memory.mem.pop()
             # Clear and reload tree to update addresses
             self.load_mem()
             self.log_message(f"Added new memory cell at address {insert_index}")
         else:
-            new_index = self.memory.add_value("+0000")
-            self.memory_tree.insert("", tk.END, values=(f"{new_index:02}", "+0000"))
+            new_index = self.memory.add_value("+000000")
+            self.memory_tree.insert("", tk.END, values=(f"{new_index:02}", "+000000"))
             self.log_message(f"Added new memory cell at address {new_index}")
 
     def remove_memory_cell(self):
