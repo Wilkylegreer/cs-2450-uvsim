@@ -16,12 +16,12 @@ class ProgramLoader:
         return lines
 
     def lineValidation(self, lines):
-        if len(lines) > 100:
+        if len(lines) > 250:
             self.gui.log_message("Out of bounds")
             return False
         for x in lines:
             stripped_line = x.lstrip("+-")
-            if len(stripped_line) != 4 or not stripped_line.isdigit():
+            if len(stripped_line) != 6 or not stripped_line.isdigit():
                 self.gui.log_message(f"Invalid line: {x}")
                 return False
         return True

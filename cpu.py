@@ -28,8 +28,13 @@ class CPU:
         return instruction
     
     def decode_execute(self, instruction):
-        opcode = int(instruction) // 100
-        memoryLoc = int(instruction) % 100
+
+        if len(instruction) == 4:
+            opcode = int(instruction) // 100
+            memoryLoc = int(instruction) % 100
+        elif len(instruction) == 6:
+            opcode = int(instruction) // 1000
+            memoryLoc = int(instruction) % 1000
 
         if opcode in [30, 31, 32, 33]:
             self.accumulator = self.mathInstruct.execute(opcode, self.accumulator, memoryLoc)
