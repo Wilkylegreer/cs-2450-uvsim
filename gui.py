@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, colorchooser
 import sys
+from six_digit_handler import Memory6, CPU6, ControlInstructions6, MathInstructions6
+
 
 class UvsimGUI:
     def __init__(self, root):
@@ -44,7 +46,8 @@ class UvsimGUI:
 
     def submit_input(self):
         content = self.input_entry.get("1.0", tk.END).strip()
-        if content.lstrip("+-").isdigit() and len(content.lstrip("+-")) <= 4:
+        expected_len = 6 if hasattr(self.memory, "mem") and len(str(self.memory.mem[0]).lstrip("+-")) == 6 else 4
+        if content.lstrip("+-").isdigit() and len(content.lstrip("+-")) == expected_len:
             self.conInstruct.READ(self.conInstruct.temp_address)
             self.log_message(f"Submitted input: {content}")
             self.resume_cpu()
@@ -147,31 +150,52 @@ class UvsimGUI:
         if filepath:
             self.selected_file = filepath
             self.log_message(f"Opened file: {filepath}")
+
+            
             # Simple program loading
             from memory import Memory
             from cpu import CPU
             from control_instructions import ControlInstructions
             from math_instructions import MathInstructions
             from program_loader import ProgramLoader
-            if self.selected_file and self.selected_file.lower().endswith(".txt"):
-                self.btn_run.configure(state=tk.NORMAL)
-                # self.btn_step.configure(state=tk.NORMAL, style="Enabled.TButton")
-                self.btn_reset.configure(state=tk.NORMAL)
-            # else:
-            #     self.log_message("Invalid file type. Please select a .txt file.")
-            #     return
 
-            self.memory = Memory()
-            self.cpu = CPU(self.memory, self)
-            self.conInstruct = ControlInstructions(self.memory, self.cpu, self)
-            self.mathInstruct = MathInstructions(self.memory)
+            #Determine if 4-digit or 6-digit mode based on file content
+            try: 
+                with open(filepath, "r") as f:
+                    lines = [ln.strip() for ln in f.readlines() if ln.strip()]
+                    has_six_digit = any(len(ln.lstrip("+-")) == 6 for ln in lines)
+            except Exception as e:
+                self.log_message(f"Error reading file for detection: {e}")
+                has_six_digit = False
+            # Import appropriate system
+            from program_loader import ProgramLoader
+            if has_six_digit:
+                from six_digit_handler import Memory6, CPU6, ControlInstructions6, MathInstructions6
+                self.memory = Memory6()
+                self.cpu = CPU6(self.memory, self)
+                self.conInstruct = ControlInstructions6(self.memory, self.cpu, self)
+                self.mathInstruct = MathInstructions6(self.memory)
+                self.loader = ProgramLoader(self.memory, self)
+                self.log_message("Detected 6-digit program – initialized 6-digit CPU.")
+            else:
+                from memory import Memory
+                from cpu import CPU
+                from control_instructions import ControlInstructions
+                from math_instructions import MathInstructions
+                self.memory = Memory()
+                self.cpu = CPU(self.memory, self)
+                self.conInstruct = ControlInstructions(self.memory, self.cpu, self)
+                self.mathInstruct = MathInstructions(self.memory)
+                self.loader = ProgramLoader(self.memory, self)
+                self.log_message("Detected 4-digit program – using default CPU.")
+
             self.cpu.set_instructions(self.conInstruct, self.mathInstruct)
-            self.loader = ProgramLoader(self.memory, self)
+            if filepath.lower().endswith(".txt"):
+                self.btn_run.configure(state=tk.NORMAL)
+                self.btn_reset.configure(state=tk.NORMAL)
 
             self.load_file()
             self.load_mem()
-
-    
 
     def open_theme_menu(self, event=None):
         # Popup position (under the mouse)
