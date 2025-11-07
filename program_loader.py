@@ -21,7 +21,7 @@ class ProgramLoader:
             return False
         for x in lines:
             stripped_line = x.lstrip("+-")
-            if len(stripped_line) != 4 or not stripped_line.isdigit():
+            if (len(stripped_line) not in (4, 6)) or not stripped_line.isdigit():
                 self.gui.log_message(f"Invalid line: {x}")
                 return False
         return True
