@@ -1,20 +1,15 @@
-#classes for 6 digit files
+#six_digit_handler.py
 
 from memory import Memory
 from cpu import CPU
 from control_instructions import ControlInstructions
 from math_instructions import MathInstructions
-
-from memory import Memory
-from cpu import CPU
-from control_instructions import ControlInstructions
-from math_instructions import MathInstructions
-
 
 # ---------------- MEMORY ----------------
 class Memory6(Memory):
     def __init__(self):
         super().__init__()
+        self.size = 250
         self.mem = ["+000000"] * self.size
 
     def reset(self):
