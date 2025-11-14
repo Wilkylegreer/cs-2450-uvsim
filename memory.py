@@ -2,8 +2,7 @@
 
 class Memory:
     def __init__(self):
-        self.size = 250
-
+        self.size = 100
         self.mem = [0] * self.size
 
     def reset(self):
@@ -29,6 +28,12 @@ class Memory:
                 self.mem[address] = value
         except:
             self.mem[address] = value
+
+    def add_value(self, value):
+        for index, x in enumerate(self.mem):
+            if x == 0:
+                self.mem[index] = value
+                return index
 
     def add_value(self, value):
         for index, x in enumerate(self.mem):

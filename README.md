@@ -17,17 +17,41 @@ UVSim is a program that lets you run and watch simple programs written in a very
    ```bash
    python main.py
    ```  
-3. ON MAC: When opened, click "File" at left side of your menu bar near the Apple logo, then click "Open". Find the program you want to run (for example: `Test6.txt`) and click "Open".  
-   ON WINDOWS When opened, click "File" at the top left corder of the application, then click "Open". Find the program you want to run (for example: `Test6.txt`) and click "Open".
-   Please note that if you select an invalid file then it will tell you in the Output/Log box.
-4. Press the "Run" button to run the program with the file that you selected. As the program runs, you will see messages in the terminal showing what the simulator is doing. Sometimes, the program may ask you to type in numbers as input. Just follow the prompts and enter the numbers one at a time.  
+3. **Opening a File:**  
+   - **Mac:** Click “File” in the menu bar near the Apple logo → click **Open** → select a program file (e.g., `Test6.txt`).  
+   - **Windows:** Click “File” at the top left corner → click **Open** → select a program file (e.g., `Test6.txt`).  
+   - If you select an invalid file, the Output/Log box will display an error message.  
+4. Press the **Run** button to execute the program. You will see updates in the output area and may be prompted to type input values as the program runs.
+
+---
+
+## 💾 File Saving
+You can now save your current program or memory state directly from the interface:  
+- Click **File → Save (or save as)** to store the current state of your loaded or edited program.  
+- You’ll be prompted to choose a destination and filename for saving.  
+- Saved files can later be reopened with **File → Open**.
+
+---
+
+## 🧠 Memory Editing
+UVSim now supports direct memory editing:  
+- **Double-click** on any memory cell in the memory table to edit its value.  
+- Press **Enter** to confirm your change.  
+- You can also **clear selected memory entries** to customize your program or test memory behavior interactively.
+
+---
+
+## 🎨 Custom Color Themes
+You can personalize UVSim’s appearance with system-wide custom colors **(File → Themes)**:  
+- Change background, text, and highlight colors to fit your preferences.  
+- These color settings apply across the entire application for a consistent and accessible look.
 
 ---
 
 ## 💡 What You'll See
-While the program is running, you will see messages that tell you what the simulator is doing, such as loading instructions, reading input, or displaying output. You might also see updates showing the contents of memory or the current value inside the "accumulator" (a special place where calculations happen). This is normal and helps you understand how the program works step by step.
+While the program is running, you will see messages that tell you what the simulator is doing—such as loading instructions, reading input, or displaying output. You might also see updates showing the contents of memory or the accumulator (a special place where calculations happen).  
 
-Example output might look like this:  
+Example output:
 ```
 Enter an integer: 123
 Stored 123 at memory location 10
@@ -38,21 +62,20 @@ Program halted successfully.
 ---
 
 ## 📥 Input Instructions
-Sometimes the program will ask you to enter numbers. When this happens:  
-- Type a plain number (positive or negative) and press Enter.  
-- Enter one number at a time as requested.  
-- For example, if asked for input, you might type:  
-  ```
-  25
-  -10
-  0
-  ```  
-- Just follow the prompts and enter the numbers as they appear in your program instructions.
+When the program requests input:
+- Type a number (positive or negative) into the bottom text box and press Enter.  
+- Enter one number at a time as prompted.
+
+Example:
+```
+25
+-10
+0
+```
 
 ---
 
 ## 🖥 Instruction Set (Reference)
-This section is mainly for reference. You don’t need to understand this table to use the program.
 
 | Code | Mnemonic    | Description |
 |------|-------------|-------------|
@@ -70,13 +93,27 @@ This section is mainly for reference. You don’t need to understand this table 
 | 43   | HALT        | Stop the program |
 
 ➡️ **Instruction format:**  
+Old Format (4 digit words):
 - First 2 digits → Operation code  
-- Last 2 digits → Memory address operand
+- Last 2 digits → Memory address operand  
+New Format (6 digit words):
+- First 3 digits → Operation code
+- Last 3 digits → Memory address operand
 
-## 📝 Example:
-- 2007 → LOAD(20) from memory location(07)
+**Example:**  
+`2007` → LOAD (20) from memory location (07)
+`020007` → LOAD (20) from memory location (07)
 
 ---
 
 ## 👤 Authors
-- Developed by Darby Thomas, Ethan Rasmussen, and Kyle Greer
+Developed by **Darby Thomas**, **Ethan Rasmussen**, and **Kyle Greer**
+
+---
+
+✅ **New Features:**  
+- File saving via **File → Save**  
+- Support for 6 digit words
+- Memory editing by **double-clicking** on memory cells
+- **Clear** memory entries interactively
+- System-wide **custom color themes**
