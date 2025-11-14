@@ -16,27 +16,39 @@ class ProgramLoader:
         return lines
 
     def lineValidation(self, lines):
-        if len(lines) > 100:
+        if len(lines) > self.memory.size:
             self.gui.log_message("Out of bounds")
             return False
         for x in lines:
             stripped_line = x.lstrip("+-")
-            if len(stripped_line) != 4 or not stripped_line.isdigit():
+            if (len(stripped_line) not in (4, 6)) or not stripped_line.isdigit():
                 self.gui.log_message(f"Invalid line: {x}")
                 return False
         return True
 
     def load_from_file(self, filename):
-        with open(filename, "r") as file:
-            allLines = file.readlines()
-            allLines = self.lineCleanUp(allLines)
-            if self.lineValidation(allLines):
-                for index, x in enumerate(allLines):
-                    self.memory.set_value(index, x)
-                self.gui.log_message("Program loaded without errors.")
+        try:
+            with open(filename, "r") as file:
+                all_lines = file.readlines()
+
+            all_lines = self.lineCleanUp(all_lines)
+
+            if not all_lines:
+                self.gui.log_message("File is empty or invalid.")
+                return False
+
+            if self.lineValidation(all_lines):
+                for index, line in enumerate(all_lines):
+                    self.memory.set_value(index, line)
+                self.gui.log_message("Program loaded successfully.")
                 return True
             else:
-                for index, x in enumerate(allLines):
-                    self.memory.set_value(index, x)
-                self.gui.log_message("Program loaded with invalid syntax.")
+                # Load anyway (but mark invalid)
+                for index, line in enumerate(all_lines):
+                    self.memory.set_value(index, line)
+                self.gui.log_message("Program loaded with validation errors.")
                 return True
+
+        except Exception as e:
+            self.gui.log_message(f"Error loading program file: {e}")
+            return False

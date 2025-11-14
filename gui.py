@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, colorchooser
 import sys
+from six_digit_handler import Memory6, CPU6, ControlInstructions6, MathInstructions6
+
 
 class UvsimGUI:
     def __init__(self, root):
@@ -9,7 +11,7 @@ class UvsimGUI:
         self.root.geometry("900x675")
         self.root.configure(padx=10, pady=10)
         self.current_entry = None
-
+        self.program_lines = []
         self.create_widgets()
         self.change_theme("default mode")
 
@@ -25,12 +27,13 @@ class UvsimGUI:
     def check_run(self):
         can_run = False
         for x in self.memory.mem:
-            if len(str(x).lstrip("+-")) < 4 or not str(x).lstrip("+-").isdigit():
-                if x == 0:
+            s = str(x).lstrip("+-")
+            if not s.isdigit() or len(s) not in (4, 6):
+                if x == 0 or x == "+0000" or x == "+000000":
                     can_run = True
                     break
                 can_run = False
-                self.log_message(f"{x} : One or more errors in memory. Fix before running.")
+                self.log_message(f"{x} : Invalid memory value. Must be signed 4 or 6 digits.")
                 break
             else:
                 can_run = True
@@ -44,12 +47,17 @@ class UvsimGUI:
 
     def submit_input(self):
         content = self.input_entry.get("1.0", tk.END).strip()
-        if content.lstrip("+-").isdigit() and len(content.lstrip("+-")) <= 4:
+        digits = content.lstrip("+-")
+        # Accept 4- or 6-digit input depending on CPU version
+        expected_len = 6 if hasattr(self.memory, "WORD_SIZE") and self.memory.WORD_SIZE == 6 else 4
+
+        if digits.isdigit() and len(digits) == expected_len:
             self.conInstruct.READ(self.conInstruct.temp_address)
             self.log_message(f"Submitted input: {content}")
             self.resume_cpu()
         else:
-            self.log_message("Invalid input, must be a signed 4-digit number (e.g. +1234 or -0567). Try again.")
+            self.log_message(f"Invalid input — must be a signed {expected_len}-digit number "
+                             f"(e.g. +{'0'*(expected_len-1)}1).")
         self.input_entry.delete("1.0", tk.END)
         self.btn_submit.configure(state=tk.DISABLED)
 
@@ -73,28 +81,31 @@ class UvsimGUI:
             x, y, width, height = self.memory_tree.bbox(selected_item, selected_column)
             old_value = self.memory_tree.item(selected_item, "values")[1]
 
-            # Create an entry widget over the cell
             entry = ttk.Entry(self.memory_tree)
-            entry.place(x = x, y = y - 2, width = width + 4, height = height + 4)
+            entry.place(x=x, y=y-2, width=width+4, height=height+4)
             entry.insert(0, old_value)
             entry.focus()
             entry.selection_range(0, tk.END)
-
             self.current_entry = entry
 
             def save_edit(event=None):
                 new_value = entry.get().strip()
                 try:
-                    # Basic validation: must be signed integer up to 4 digits
-                    if new_value.lstrip("+-").isdigit() and len(new_value.lstrip("+-")) <= 4:
-                        # Update tree
+                    digits = new_value.lstrip("+-")
+                    if digits.isdigit() and len(digits) in (4, 6):
                         address = int(self.memory_tree.item(selected_item, "values")[0])
-                        self.memory_tree.item(selected_item, values=(f"{address:02}", new_value))
-                        # Update actual memory
-                        self.memory.set_value(address, new_value)
-                        self.log_message(f"Memory[{address}] updated to {new_value}")
+                        self.memory.set_value(address, int(new_value))
+                        self.memory_tree.item(selected_item, values=(f"{address:02}", self.memory.mem[address]))
+                        self.log_message(f"Memory[{address}] updated to {self.memory.mem[address]}")
+                        self._ensure_capacity(address)
+                        self.program_lines[address] = self.memory.mem[address]
+                        if hasattr(self, "program_lines"):
+                            if address < len(self.program_lines):
+                                self.program_lines[address] = self.memory.mem[address]
+                            else:
+                                self.program_lines.append(self.memory.mem[address])
                     else:
-                        self.log_message("Invalid input. Must be a signed 4-digit number.")
+                        self.log_message("Invalid input. Must be a signed 4- or 6-digit number.")
                 except Exception as e:
                     self.log_message(f"Error updating memory: {e}")
                 finally:
@@ -104,75 +115,175 @@ class UvsimGUI:
             entry.bind("<Return>", save_edit)
             entry.bind("<FocusOut>", lambda e: (entry.destroy(), setattr(self, "current_entry", None)))
 
-    def add_memory_cell(self):
+
+    # --------------------------------------------------------------
+    # All memory registers are alraedy loaded into the GUI
+    # Commenting out ability to add lines beyond defined memory size
+    # --------------------------------------------------------------
+
+    """def add_memory_cell(self):
+        filler = self._filler()
         selected_item = self.memory_tree.selection()
+
+        # --- Determine insert index ---
         if selected_item:
+            # If a row is selected, add *after* that row
             selected_item = selected_item[0]
             address = int(self.memory_tree.item(selected_item, "values")[0])
-            # Insert new memory cell after the selected address
             insert_index = address + 1
-            self.memory.mem.insert(insert_index, "+0000")
-            self.memory.mem.pop()
-            # Clear and reload tree to update addresses
-            self.load_mem()
-            self.log_message(f"Added new memory cell at address {insert_index}")
         else:
-            new_index = self.memory.add_value("+0000")
-            self.memory_tree.insert("", tk.END, values=(f"{new_index:02}", "+0000"))
-            self.log_message(f"Added new memory cell at address {new_index}")
+            # No selection — add after the last non-empty line
+            insert_index = len(self.memory.mem)
+            # But trim trailing zeros first (for cleaner placement)
+            while insert_index > 0 and self.memory.mem[insert_index - 1] in (0, "+0000", "+000000"):
+                insert_index -= 1
+            insert_index = len(self.memory.mem) if insert_index == 0 else insert_index
 
+        # --- Ensure capacity and insert new filler cell ---
+        self._ensure_capacity(insert_index)
+        if insert_index < len(self.memory.mem):
+            self.memory.mem.insert(insert_index, filler)
+        else:
+            self.memory.mem.append(filler)
+
+        self.program_lines.insert(insert_index, filler)
+
+        # --- Refresh the GUI ---
+        self.load_mem()
+        self.log_message(f"Added new memory cell at address {insert_index}")
+    """
     def remove_memory_cell(self):
         selected_item = self.memory_tree.selection()
         if not selected_item:
             self.log_message("No memory cell selected to remove.")
             return
-        address = int(self.memory_tree.item(selected_item, "values")[0])
-        self.memory_tree.delete(selected_item)
+
+        address = int(self.memory_tree.item(selected_item[0], "values")[0])
+        filler = self._filler()
+
+        # --- Clear from memory ---
         if address < len(self.memory.mem):
-            self.memory.mem[address] = 0
-        self.log_message(f"Removed memory cell at address {address}")
+            self.memory.mem[address] = filler
+
+        # --- Keep program_lines aligned (replace, don't delete) ---
+        self._ensure_capacity(address)
+        self.program_lines[address] = filler
+
+        # --- Refresh display ---
+        self.load_mem()
+        self.log_message(f"Cleared memory cell at address {address}")
 
     def load_mem(self):
+        # Clear the current tree
         for item in self.memory_tree.get_children():
             self.memory_tree.delete(item)
-        for index, i in enumerate(self.memory.mem):
-            if i != 0:
-                self.memory_tree.insert("", tk.END, values=(f"{index:02}", f"{i}"))
+
+        # Filler for empty cells
+        filler = self._filler()
+
+        # Populate the tree with all memory cells
+        for index in range(len(self.memory.mem)):
+            val = self.memory.mem[index]
+            # Normalize blank or 0 cells to filler for display
+            if val in (0, "0", "", "+0000", "+000000"):
+                val = filler
+            self.memory_tree.insert("", tk.END, values=(f"{index:02}", f"{val}"))
 
     def open_file(self):
         filepath = filedialog.askopenfilename(
             title="Open Program File",
             filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
         )
-        if filepath:
-            self.selected_file = filepath
-            self.log_message(f"Opened file: {filepath}")
-            # Simple program loading
-            from memory import Memory
-            from cpu import CPU
-            from control_instructions import ControlInstructions
-            from math_instructions import MathInstructions
-            from program_loader import ProgramLoader
-            if self.selected_file and self.selected_file.lower().endswith(".txt"):
-                self.btn_run.configure(state=tk.NORMAL)
-                # self.btn_step.configure(state=tk.NORMAL, style="Enabled.TButton")
-                self.btn_reset.configure(state=tk.NORMAL)
-            # else:
-            #     self.log_message("Invalid file type. Please select a .txt file.")
-            #     return
+        if not filepath:
+            return
 
-            self.memory = Memory()
-            self.cpu = CPU(self.memory, self)
-            self.conInstruct = ControlInstructions(self.memory, self.cpu, self)
-            self.mathInstruct = MathInstructions(self.memory)
+        self.selected_file = filepath
+        self.log_message(f"Opened file: {filepath}")
+
+        # ----------------------------------------------------------
+        # Detect whether the program uses 6-digit words
+        # ----------------------------------------------------------
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                lines = [ln.strip() for ln in f.readlines() if ln.strip()]
+                has_six_digit = any(len(ln.lstrip("+-")) == 6 for ln in lines)
+        except Exception as e:
+            self.log_message(f"Error reading file for detection: {e}")
+            has_six_digit = False
+            lines = []
+
+        # ----------------------------------------------------------
+        # Import correct version of CPU/Memory/etc based on format
+        # ----------------------------------------------------------
+        try:
+            if has_six_digit:
+                from six_digit_handler import Memory6, CPU6, ControlInstructions6, MathInstructions6
+                from program_loader import ProgramLoader
+
+                self.memory = Memory6()
+                self.cpu = CPU6(self.memory, self)
+                self.conInstruct = ControlInstructions6(self.memory, self.cpu, self)
+                self.mathInstruct = MathInstructions6(self.memory)
+                self.loader = ProgramLoader(self.memory, self)
+                self.memory.WORD_SIZE = 6
+                self.log_message("Detected 6-digit program — initialized 6-digit CPU.")
+            else:
+                from memory import Memory
+                from cpu import CPU
+                from control_instructions import ControlInstructions
+                from math_instructions import MathInstructions
+                from program_loader import ProgramLoader
+
+                self.memory = Memory()
+                self.cpu = CPU(self.memory, self)
+                self.conInstruct = ControlInstructions(self.memory, self.cpu, self)
+                self.mathInstruct = MathInstructions(self.memory)
+                self.loader = ProgramLoader(self.memory, self)
+                self.memory.WORD_SIZE = 4
+                self.log_message("Detected 4-digit program — using legacy CPU.")
+
             self.cpu.set_instructions(self.conInstruct, self.mathInstruct)
-            self.loader = ProgramLoader(self.memory, self)
+        except Exception as e:
+            self.log_message(f"Error initializing CPU/Memory: {e}")
+            return
 
-            self.load_file()
-            self.load_mem()
+        # Enable Run/Reset buttons if it's a valid text file
 
-    
+        if filepath.lower().endswith(".txt"):
+            self.btn_run.configure(state=tk.NORMAL)
+            self.btn_reset.configure(state=tk.NORMAL)
 
+        # Initialize editable program_lines and memory
+
+        try:
+            self.program_lines = []
+            total_size = getattr(self.memory, "size", len(self.memory.mem))
+            filler = self._filler()
+
+            for i in range(total_size):
+                if i < len(lines) and lines[i]:
+                    raw = lines[i].strip()
+                    if raw in ("0", "+0", "-0", "0000", "+0000", "-0000"):
+                        normalized = filler
+                    else:
+                        # Ensure signed format
+                        if not raw.startswith(("+", "-")):
+                            raw = "+" + raw
+                        normalized = raw.zfill(self.memory.WORD_SIZE + 1)  # sign + digits
+
+                    self.program_lines.append(normalized)
+                    self.memory.mem[i] = normalized
+                else:
+                    self.program_lines.append(filler)
+                    self.memory.mem[i] = filler
+
+            self.log_message(f"Loaded {len(lines)} lines into memory and editable buffer.")
+        except Exception as e:
+            self.log_message(f"Error initializing program lines: {e}")
+
+        # Load GUI display
+
+        self.load_mem()
     def open_theme_menu(self, event=None):
         # Popup position (under the mouse)
         x = self.root.winfo_pointerx()
@@ -409,11 +520,17 @@ class UvsimGUI:
         mem_button_frame = ttk.Frame(right_frame)
         mem_button_frame.pack(fill=tk.X, pady=(5, 0))
 
-        btn_add = ttk.Button(mem_button_frame, text="+", width=3, command=self.add_memory_cell)
-        btn_add.pack(side=tk.LEFT, padx=5)
 
-        btn_remove = ttk.Button(mem_button_frame, text="–", width=3, command=self.remove_memory_cell)
-        btn_remove.pack(side=tk.LEFT)
+        # --------------------------------------------------------------
+        # All memory registers are alraedy loaded into the GUI
+        # Removing ability to add lines beyond defined memory size
+        # --------------------------------------------------------------
+
+        #btn_add = ttk.Button(mem_button_frame, text="+", width=3, command=self.add_memory_cell)
+        #btn_add.pack(side=tk.LEFT, padx=5) 
+
+        btn_remove = ttk.Button(mem_button_frame, text="Clear", width=10, command=self.remove_memory_cell)
+        btn_remove.pack(anchor="center", pady=5)
 
         submit_frame = ttk.Frame(self.root)
         submit_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10, padx=10)
@@ -448,22 +565,47 @@ class UvsimGUI:
 
     def save_file(self):
         try:
-            # If no file loaded yet, ask user for one
             if not hasattr(self, "selected_file") or not self.selected_file:
                 return self.save_file_as()
 
-            # Convert memory contents into plain text lines
-            content = "\n".join(str(x) for x in self.memory.mem)
+            # --- Used to store only original and user-edited lines---
+            if not hasattr(self, "program_lines") or not self.program_lines:
+                self.program_lines = []
 
+            editable_lines = self.program_lines.copy()
+            filler = "+000000" if getattr(self.memory, "WORD_SIZE", 4) == 6 else "+0000"
+            total_size = getattr(self.memory, "size", len(self.memory.mem))
+
+            # --- Write to memory sequentially ---
+            output_lines = []
+            for addr in range(total_size):
+                if addr < len(editable_lines) and editable_lines[addr].strip():
+                    line = editable_lines[addr].strip()
+                else:
+                    line = filler
+                output_lines.append(line)
+
+            content = "\n".join(output_lines)
             with open(self.selected_file, "w", encoding="utf-8") as f:
                 f.write(content)
 
-            self.log_message(f"Saved file: {self.selected_file}")
-            messagebox.showinfo("Saved", f"File saved:\n{self.selected_file}")
+            self.log_message(f"Saved full program memory ({len(output_lines)} lines) to {self.selected_file}")
+            messagebox.showinfo("Saved", f"Program saved:\n{self.selected_file}")
 
         except Exception as e:
             messagebox.showerror("Error", f"Could not save file:\n{e}")
             self.log_message(f"Save error: {e}")
+
+    def _filler(self): # Helper to get filler line based on word size
+        return "+000000" if getattr(self.memory, "WORD_SIZE", 4) == 6 else "+0000"
+
+    def _ensure_capacity(self, addr: int):
+        if not hasattr(self, "program_lines"):
+            self.program_lines = []
+        while len(self.program_lines) <= addr:
+            self.program_lines.append(self._filler())
+
+
 
     def save_file_as(self):
         try:
@@ -476,18 +618,31 @@ class UvsimGUI:
                 self.log_message("Save As cancelled.")
                 return
 
-            content = "\n".join(str(x) for x in self.memory.mem)
+            if not hasattr(self, "program_lines") or not self.program_lines:
+                self.program_lines = []
 
+            editable_lines = self.program_lines.copy()
+            filler = "+000000" if getattr(self.memory, "WORD_SIZE", 4) == 6 else "+0000"
+            total_size = getattr(self.memory, "size", len(self.memory.mem))
+
+            output_lines = []
+            for addr in range(total_size):
+                if addr < len(editable_lines) and editable_lines[addr].strip():
+                    line = editable_lines[addr].strip()
+                else:
+                    line = filler
+                output_lines.append(line)
+
+            content = "\n".join(output_lines)
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
-            self.selected_file = file_path  # update path for future saves
-            self.log_message(f"Saved file as: {file_path}")
-            messagebox.showinfo("Saved", f"File saved:\n{file_path}")
+            self.selected_file = file_path
+            self.log_message(f"Saved full program memory ({len(output_lines)} lines) as: {file_path}")
+            messagebox.showinfo("Saved", f"Program saved:\n{file_path}")
 
         except Exception as e:
             messagebox.showerror("Error", f"Could not save file:\n{e}")
             self.log_message(f"Save As error: {e}")
-
 
 
