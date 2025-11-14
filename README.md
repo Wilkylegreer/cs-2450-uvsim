@@ -37,7 +37,7 @@ You can now save your current program or memory state directly from the interfac
 UVSim now supports direct memory editing:  
 - **Double-click** on any memory cell in the memory table to edit its value.  
 - Press **Enter** to confirm your change.  
-- You can also **add or remove selected memory entries** to customize your program or test memory behavior interactively.
+- You can also **clear selected memory entries** to customize your program or test memory behavior interactively.
 
 ---
 
@@ -62,9 +62,9 @@ Program halted successfully.
 ---
 
 ## 📥 Input Instructions
-When the program requests input:  
-- Type a number (positive or negative) and press Enter.  
-- Enter one number at a time as prompted.  
+When the program requests input:
+- Type a number (positive or negative) into the bottom text box and press Enter.  
+- Enter one number at a time as prompted.
 
 Example:
 ```
@@ -93,11 +93,16 @@ Example:
 | 43   | HALT        | Stop the program |
 
 ➡️ **Instruction format:**  
+Old Format (4 digit words):
 - First 2 digits → Operation code  
 - Last 2 digits → Memory address operand  
+New Format (6 digit words):
+- First 3 digits → Operation code
+- Last 3 digits → Memory address operand
 
 **Example:**  
 `2007` → LOAD (20) from memory location (07)
+`020007` → LOAD (20) from memory location (07)
 
 ---
 
@@ -108,6 +113,7 @@ Developed by **Darby Thomas**, **Ethan Rasmussen**, and **Kyle Greer**
 
 ✅ **New Features:**  
 - File saving via **File → Save**  
-- Memory editing by **double-clicking** on memory cells  
-- **Add/remove** memory entries interactively  
+- Support for 6 digit words
+- Memory editing by **double-clicking** on memory cells
+- **Clear** memory entries interactively
 - System-wide **custom color themes**
