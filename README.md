@@ -93,9 +93,11 @@ Example:
 | 43   | HALT        | Stop the program |
 
 ➡️ **Instruction format:**  
+
 Old Format (4 digit words):
 - First 2 digits → Operation code  
-- Last 2 digits → Memory address operand  
+- Last 2 digits → Memory address operand
+
 New Format (6 digit words):
 - First 3 digits → Operation code
 - Last 3 digits → Memory address operand
