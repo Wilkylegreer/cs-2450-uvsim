@@ -28,7 +28,8 @@ class CPU:
         return instruction
     
     def decode_execute(self, instruction):
-
+        instruction = instruction.lstrip("+-")
+        print(instruction)
         if len(instruction) == 4:
             opcode = int(instruction) // 100
             memoryLoc = int(instruction) % 100
