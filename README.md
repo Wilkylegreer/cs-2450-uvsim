@@ -52,7 +52,9 @@ You can personalize UVSim’s appearance with system-wide custom colors **(File 
 
 UVSim now supports running multiple simulator windows at the same time.
 You can open a completely new instance by selecting:
+
 **File → Open New Window**
+
 Each window runs independently, allowing you to test different programs, compare outputs, or debug side-by-side without interfering with your main session.
 
 ---
